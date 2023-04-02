@@ -3,10 +3,13 @@ import cities from "../../data/cities.json"
 import dummyData from "../../data/dummy.json"
 import getWeatherDataAPI from "../../api/weather_api"
 import WeatherComponent from "../components/WeatherComponent"
-import { Box, Typography, useMediaQuery } from "@mui/material"
+import { Box, Typography, useMediaQuery, TextField, Button} from "@mui/material"
 import { Grid } from "@mui/material";
-// import { makeStyles } from "@mui/styles";
+import { BsCloudSunFill } from "react-icons/bs"
 
+import backgroundImage from "../../assets/header_bg.png"
+import Footer from "../components/Footer"
+import Header from "../components/Header"
 
 
 export default function HomePage() {
@@ -19,7 +22,8 @@ export default function HomePage() {
     return city.CityCode
   })
 
-  const isLargeScreen = useMediaQuery('(min-width:1200px)');
+  const isGridToggle = useMediaQuery('(min-width:1536px)');
+  const isThousandPixelWide = useMediaQuery('(max-width:1000px)')
   const isMobileScreen = useMediaQuery('(max-width:500px)');
   const isTabletScreen = useMediaQuery('(max-width:1750px)');
 
@@ -30,15 +34,59 @@ export default function HomePage() {
   // console.log(cityCodes)
 
   return (
-    <Box width="100%" display="flex" justifyContent="center" alignItems="center" >
+    <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" 
+      backgroundColor="#1f2128"
+      // backgroundColor="lightgreen"
+      sx={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "top center",
+      }}
 
-      <Box backgroundColor="lightyellow" width={isMobileScreen? "90%" : isTabletScreen? "82%" : "66%"
-      } padding="10rem 0rem" display="flex" justifyContent="center" alignItems="center" textAlign="center">
+    >
+      
+      <Header/>
+      <Box className="searchBox" width="80%" display="flex" justifyContent="center" alignItems="center" marginBottom={isMobileScreen ? "2rem" : "3.4rem"}>
+        <TextField 
+          size="small"
+          label="Enter a city"
+          inputProps={{style: {height: "2rem"}}}
+          InputLabelProps={{style: {color: "gray" , marginTop: "5px" }}}
+          sx={{width: "25rem", backgroundColor: "#1f2128", borderRadius: '8px 0 0 8px' }}
+        />
+        <Button 
+          variant="contained"
+          style={{ 
+            height: "3rem",
+            textTransform: "none",
+            fontSize: isMobileScreen ? "0.8rem" : "1rem",
+            width: isMobileScreen ? "12.3rem" : "8.3rem",
+          }}
+          sx={{
+            backgroundColor: "#6c5dd3",
+            '&:hover': {
+              backgroundColor: "#5443c0",
+            },
+            borderRadius: "0 8px 8px 0",
+          }}
+        >
+          Add City
+        </Button>
+      </Box>
 
-        <Grid container spacing={0} backgroundColor="lightblue" justifyContent={isLargeScreen? "null" : "center" } >
+
+      <Box 
+      // backgroundColor="lightyellow" 
+      width={isMobileScreen? "90%" : isTabletScreen? "82%" : "64%"
+      } padding="0rem 0rem" display="flex" justifyContent="center" alignItems="center" textAlign="center">
+
+        <Grid 
+          container 
+          // backgroundColor="lightblue"
+        >
           {[...Array(5)].map((_, index) => (
-            <Grid key={index} item sx={12} lg={6} justifySelf="center" width="100%">
-              <Box width="85%" display="flex" justifyContent="center" alignItems="center" marginTop="2rem" backgroundColor="red" mx="auto" >
+            <Grid key={index} item xs={12} xl={6} justifySelf="center" width="100%">
+              <Box width={isGridToggle? "85%" : isThousandPixelWide? "85%" :  "65%"} display="flex" justifyContent="center" alignItems="center" marginTop="2rem"mx="auto" >
               <WeatherComponent />
               {/* <h1>Heloooo</h1> */}
               </Box>
@@ -47,6 +95,7 @@ export default function HomePage() {
         </Grid>
         
       </Box>
+      <Footer/>
     </Box>
   );
 }
