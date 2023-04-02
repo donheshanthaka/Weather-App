@@ -7,9 +7,11 @@ export default function Header() {
     <Box
       display="flex"
       justifyContent="center"
-      alignItems="center"
-      marginTop="5.8rem"
+      alignItems="flex-end"
+      // marginTop="5.8rem"
+      height="135px"
       marginBottom="3.4rem"
+      // backgroundColor="red"
     >
       <Box
         sx={{
@@ -17,7 +19,7 @@ export default function Header() {
           backgroundSize: "contain",
           backgroundPosition: "center center",
           backgroundRepeat: "no-repeat",
-          width: "50px",
+          width: "55px",
           height: "50px",
           zIndex: 1,
         }}

@@ -1,16 +1,19 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 import './index.css'
 import HomePage from './scenes/pages/HomePage'
+import WeatherComponentPage from './scenes/pages/WeatherComponentPage'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <div className="App">
-      <HomePage/>
-    </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<HomePage/>} />
+          <Route path='/selectedWeather' element={<WeatherComponentPage/>} />
+        </Routes>
+      </BrowserRouter>
+    </>
   )
 }
 

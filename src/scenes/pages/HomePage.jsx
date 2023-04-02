@@ -27,6 +27,9 @@ export default function HomePage() {
   const isMobileScreen = useMediaQuery('(max-width:500px)');
   const isTabletScreen = useMediaQuery('(max-width:1750px)');
 
+  const handleClose = () => {
+    console.log("close")
+  }
 
   // getWeatherData("1248991")
 
@@ -46,7 +49,7 @@ export default function HomePage() {
 
     >
       
-      <Header style={{ position: "fixed", top: 0 }}/>
+      <Header/>
       <Box 
         className="searchBox"
         width="80%"
@@ -95,7 +98,7 @@ export default function HomePage() {
           {[...Array(5)].map((_, index) => (
             <Grid key={index} item xs={12} xl={6} justifySelf="center" width="100%">
               <Box width={isGridToggle? "85%" : isThousandPixelWide? "85%" :  "65%"} display="flex" justifyContent="center" alignItems="center" marginTop="2rem"mx="auto" >
-              <WeatherComponent />
+              <WeatherComponent data={"duuuuuuum"} onRemove={handleClose}/>
               {/* <h1>Heloooo</h1> */}
               </Box>
             </Grid>
