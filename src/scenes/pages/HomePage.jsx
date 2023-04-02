@@ -37,6 +37,7 @@ export default function HomePage() {
     <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" 
       backgroundColor="#1f2128"
       // backgroundColor="lightgreen"
+      minHeight="100vh"
       sx={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundRepeat: "no-repeat",
@@ -45,8 +46,15 @@ export default function HomePage() {
 
     >
       
-      <Header/>
-      <Box className="searchBox" width="80%" display="flex" justifyContent="center" alignItems="center" marginBottom={isMobileScreen ? "2rem" : "3.4rem"}>
+      <Header style={{ position: "fixed", top: 0 }}/>
+      <Box 
+        className="searchBox"
+        width="80%"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        marginBottom={isMobileScreen ? "2rem" : "3.4rem"}
+      >
         <TextField 
           size="small"
           label="Enter a city"
@@ -77,7 +85,7 @@ export default function HomePage() {
 
       <Box 
       // backgroundColor="lightyellow" 
-      width={isMobileScreen? "90%" : isTabletScreen? "82%" : "64%"
+      width={isMobileScreen? "94%" : isTabletScreen? "78%" : "64%"
       } padding="0rem 0rem" display="flex" justifyContent="center" alignItems="center" textAlign="center">
 
         <Grid 
