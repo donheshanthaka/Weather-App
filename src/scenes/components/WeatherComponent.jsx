@@ -1,11 +1,11 @@
 import { Box, Typography, Divider, IconButton, useMediaQuery } from "@mui/material"
 import React from "react"
-import { BsCloud } from "react-icons/bs"
 import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CloseIcon from '@mui/icons-material/Close';
 import cloudImage from '../../assets/weather_card_cloud.png'
 import { useNavigate } from "react-router-dom";
+import getTime from "../../utils/get_time";
 
 export default function WeatherComponent(props) {
 
@@ -13,11 +13,10 @@ export default function WeatherComponent(props) {
 
   const isSelected = props.selected ? true : false;
 
+
   const isSmallScreen = useMediaQuery("(max-width:725px)")
   const isThousandPixelWide = useMediaQuery("(max-width:1000px)")
   const isFiveHundredPixelWide = useMediaQuery("(max-width:500px)")
-
-  console.log(props.index)
 
   const {
     name,
@@ -32,22 +31,13 @@ export default function WeatherComponent(props) {
     windSpeed,
     windDegree,
     sunrise,
-    sunset
+    sunset,
+    icon,
+    lon,
+    lat,
+    hue
    } = props.data
 
-  const currentDate = new Date();
-
-  const options = {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-    month: "short",
-    day: "numeric",
-  };
-
-  const formattedDate = currentDate.toLocaleString("en-US", options);
-  const timeString = formattedDate.split(', ')[1];
-  const dateString = formattedDate.split(', ')[0];
 
   const sunriseTime = new Date(sunrise * 1000);
   const sunsetTime = new Date(sunset * 1000);
@@ -57,10 +47,11 @@ export default function WeatherComponent(props) {
     minute: 'numeric',
     hour12: true
   };
+  const formattedSunrise = sunriseTime.toLocaleString('en-US', optionsTwo);
+  const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
 
-const formattedSunrise = sunriseTime.toLocaleString('en-US', optionsTwo);
-const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
 
+  const time = getTime(lon, lat)
 
   const handleBackArrow = (event) => {
     event.stopPropagation()
@@ -108,7 +99,7 @@ const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
           width="100%"
           display="flex"
           justifyContent="space-between"
-          padding="2rem"
+          padding={isFiveHundredPixelWide ? "1rem" : "2rem"}
           paddingBottom="2.5rem"
           borderRadius="0.75rem 0.75rem 0 0"
           sx={{
@@ -120,7 +111,7 @@ const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
             height: '100%',
             overflow: 'hidden',
             //  HCL (hue, chroma, luminance)
-            backgroundColor: "hsl(200, 85%, 35%)",
+            backgroundColor: `hsl(${hue}, 55%, 65%)`,
           }}
         >
           {/* top left */}
@@ -134,16 +125,40 @@ const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
             <Typography fontSize="1.8rem" fontWeight="700" fontFamily='Open Sans' sx={{fontSize: "clamp(1rem, calc(4vw + 0.25rem), 1.8rem)"}}>
             {`${name}, ${country}`}
             </Typography>
-            <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>{`${timeString}, ${dateString}`}</Typography>
+            <Typography marginTop="0.3rem" fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>{time}</Typography>
             <Box
               display="flex"
               // backgroundColor="red"
-              gap="1rem"
+              gap={isFiveHundredPixelWide ? "0rem" : "1rem"}
               alignItems="center"
               justifyContent="center"
-              marginTop="1.5rem"
+              marginTop={isFiveHundredPixelWide ? "0rem" : "1.5rem"}
+              flexDirection={isFiveHundredPixelWide ? "column" : "row"}
             >
-              <BsCloud size={40} />
+              {/* <BsCloud size={40} /> */}
+              {/* {IconComponent && <IconComponent size={40} />} */}
+              {/* <Box sx={{  width: 70, height: 70, overflow: "hidden"}}>
+                  <img 
+                    src= {`https://openweathermap.org/img/wn/${icon}@2x.png`}
+                    alt="weather icon"
+                    style={{ 
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "center center"
+                    }}
+                  />
+              </Box> */}
+              <Box >
+                  <img 
+                    src= {`https://openweathermap.org/img/wn/${icon}@2x.png`}
+                    alt="weather icon"
+                    style={{ 
+                      width: "70px",
+                      height: "70px"
+                    }}
+                  />
+                </Box>
               <Typography fontFamily='Open Sans' fontWeight="500" fontSize="1.2rem" sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1.2rem)"}}>{description}</Typography>
             </Box>
           </Box>
@@ -177,7 +192,7 @@ const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
               display="flex"
               flexDirection="column"
               alignItems="center"
-              justifyContent="center"
+              justifyContent={isFiveHundredPixelWide ? "flex-end" : "center"}
               // textAlign="left"
               height="100%"
               marginTop="1rem"
@@ -200,7 +215,7 @@ const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
                 // backgroundColor="yellow"
               >
                 <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>
-                Temp Max: {`${tempMin}`}&deg;
+                Temp Max: {`${tempMax}`}&deg;
                 </Typography>
                 <Box alignSelf="flex-end">
                   <Typography fontSize="0.8rem" fontFamily='Open Sans' sx={{fontSize: "clamp(0.6rem, calc(1.5vw + 0.25rem), 0.8rem)"}}>
@@ -213,7 +228,7 @@ const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
             </Box>
           </Box>
 
-            <Box position="absolute"  left="98%" top="2%">
+            <Box position="absolute"  left={isFiveHundredPixelWide ? "93%" : "98%"} top="2%">
               <IconButton onClick={handleRemove}>
                 <CloseIcon sx={{color: "white"}}/>
               </IconButton>
@@ -240,7 +255,7 @@ const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
             height: '100%',
             overflow: 'hidden',
             //  HCL (hue, chroma, luminance)
-            backgroundColor: "hsl(200, 85%, 35%)",
+            backgroundColor: `hsl(${hue}, 55%, 65%)`,
           }}
         >
           {/* top  */}
@@ -257,7 +272,7 @@ const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
             <Typography fontSize="1.8rem" fontWeight="700" fontFamily='Open Sans' sx={{fontSize: "clamp(1.5rem, calc(4vw + 0.25rem), 1.8rem)"}}>
               {`${name}, ${country}`}
             </Typography>
-            <Typography marginTop="1rem" fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>{`${timeString}, ${dateString}`}</Typography>
+            <Typography marginTop="1rem" fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>{time}</Typography>
             
           </Box>
   
@@ -280,8 +295,19 @@ const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
                 alignItems="center"
                 justifyContent="center"
               >
-                <BsCloud size={isFiveHundredPixelWide ? 45 : 65} />
-                <Typography marginTop="1rem" fontFamily='Open Sans' fontWeight="500" fontSize="1.2rem" sx={{fontSize: "clamp(0.9rem, calc(2vw + 0.25rem), 1.2rem)"}}>{description}</Typography>
+                {/* <BsCloud size={isFiveHundredPixelWide ? 45 : 65} /> */}
+                {/* {IconComponent && <IconComponent size={isFiveHundredPixelWide ? 45 : 65} />} */}
+                <Box >
+                  <img 
+                    src= {`https://openweathermap.org/img/wn/${icon}@2x.png`}
+                    alt="weather icon"
+                    style={{ 
+                      width: isFiveHundredPixelWide ? "70px" : "120px",
+                      height: isFiveHundredPixelWide ? "70px" : "120px"
+                    }}
+                  />
+                </Box>
+                <Typography marginBottom="2rem" fontFamily='Open Sans' fontWeight="500" fontSize="1.2rem" sx={{fontSize: "clamp(0.9rem, calc(2vw + 0.25rem), 1.2rem)"}}>{description}</Typography>
               </Box>
             </Box>
 
@@ -366,7 +392,7 @@ const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
         display="flex"
         justifyContent="space-evenly"
         // padding="2rem"
-        padding={isSelected ? "4rem 2rem 4rem 2rem" : "2rem"}
+        padding={isSelected ? "4rem 2rem 4rem 2rem" : isFiveHundredPixelWide ? "1rem" : "2rem"}
         borderRadius="0 0 0.75rem 0.75rem"
       >
         <Box display="flex" flexDirection="column" justifyContent="center" gap="0.25rem" marginRight="1rem">

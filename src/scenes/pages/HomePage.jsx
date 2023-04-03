@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react"
 import cities from "../../data/cities.json"
-import dummyData from "../../data/dummy.json"
 import getWeatherDataAPI from "../../api/weather_api"
 import WeatherComponent from "../components/WeatherComponent"
 import { Box, Typography, useMediaQuery, TextField, Button} from "@mui/material"
 import { Grid } from "@mui/material";
-import { BsCloudSunFill } from "react-icons/bs"
-
+import randomHueValue from "../../utils/random_hue"
 import backgroundImage from "../../assets/header_bg.png"
 import Footer from "../components/Footer"
 import Header from "../components/Header"
@@ -15,6 +13,7 @@ import Header from "../components/Header"
 export default function HomePage() {
 
   const [weatherData, setWeatherData] = useState([])
+  const [colors, setColors] = useState([])
 
   const getWeatherData = async (cityCode) => {
     const weatherData = await getWeatherDataAPI(cityCode)
@@ -26,26 +25,25 @@ export default function HomePage() {
     return city.CityCode
   })
 
-  // getWeatherData("1248991")
-
-  // console.log(Array.isArray(cityCodes))
-  // console.log(cityCodes)
-  
   useEffect(() => {
-    
     const fetchWeatherData = async () => {
-      const data = []
+      const data = [];
       for (const code of cityCodes) {
-        const weather = await getWeatherData(code)
-        data.push(weather)
+        const weather = await getWeatherData(code);
+        data.push(weather);
       }
-      setWeatherData(data)
-    }
-    fetchWeatherData()
-    
-  },[])
+      setWeatherData(data);
   
-  // console.log(weatherData)
+      const tempColors = [];
+      for (let i = 0; i < data.length; i++) {
+        tempColors.push(randomHueValue());
+      }
+      setColors(tempColors);
+    };
+    fetchWeatherData();
+  }, []);
+  
+  
 
   const isGridToggle = useMediaQuery('(min-width:1536px)');
   const isThousandPixelWide = useMediaQuery('(max-width:1000px)')
@@ -127,6 +125,7 @@ export default function HomePage() {
                 data={{ 
                   name: data.name,
                   country: data.sys.country,
+                  weather: data.weather[0].main,
                   description: data.weather[0].description,
                   temp: parseInt(data.main.temp),
                   tempMax: parseInt(data.main.temp_max),
@@ -137,7 +136,12 @@ export default function HomePage() {
                   windSpeed: data.wind.speed,
                   windDegree: data.wind.deg,
                   sunrise: data.sys.sunrise,
-                  sunset: data.sys.sunset
+                  sunset: data.sys.sunset,
+                  dummy : data,
+                  icon: data.weather[0].icon,
+                  lon: data.coord.lon,
+                  lat: data.coord.lat,
+                  hue: colors[index]
                 }} 
                 onRemove={handleClose}
               />
