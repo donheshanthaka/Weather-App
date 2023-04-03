@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import cities from "../../data/cities.json"
 import getWeatherDataAPI from "../../api/weather_api"
 import WeatherComponent from "../components/WeatherComponent"
-import { Box, useMediaQuery, Grid  } from "@mui/material"
+import { Box, useMediaQuery, Grid } from "@mui/material"
 import randomHueValue from "../../utils/random_hue"
 import backgroundImage from "../../assets/header_bg.png"
 import Footer from "../components/Footer"
@@ -22,8 +22,21 @@ export default function HomePage() {
   })
 
   const getWeatherData = async (cityCode) => {
+    const cachedData = localStorage.getItem(cityCode)
+    if (cachedData) {
+      const { data, timestamp } = JSON.parse(cachedData)
+      // Check if the cached data is less than 5 minutes old
+      if (Date.now() - timestamp < 5 * 60 * 1000) {
+        return data
+      }
+    }
+
     const weatherData = await getWeatherDataAPI(cityCode)
-    // console.log(weatherData)
+    // Cache the data with the current timestamp
+    localStorage.setItem(
+      cityCode,
+      JSON.stringify({ data: weatherData, timestamp: Date.now() })
+    )
     return weatherData
   }
 
