@@ -1,22 +1,20 @@
-@import "normalize.css/normalize.css";
+/* Importing normalize.css to reset default browser styles */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css");
 
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://fonts.googleapis.com/css2?family=Open+Sans&display=swap);
-}
+/* Importing the Open Sans font from Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
 
+/* Setting up the default styles for the page */
 html,
 body,
-#root{
+#root {
   height: 100%;
   width: 100%;
-  font-family: "Open Sans","Rubik", sans-serif;
+  font-family: "Open Sans", sans-serif;
   color: white;
 }
 
-/* Text input field of "TextField" mui component */
+/* Customizing the "notchedOutline" class for the MUI TextField component */
 .MuiOutlinedInput-notchedOutline {
   border-radius: 8px 0 0 8px !important;
 }

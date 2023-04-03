@@ -24,7 +24,8 @@ export default function Header() {
       <Typography
         marginLeft="1.1rem"
         fontSize="2rem"
-        fontWeight="500"
+        fontWeight="600"
+        fontFamily="Open Sans"
         sx={{ fontSize: "clamp(1.2rem, calc(8vw + 0.25rem), 2rem)" }}
       >
         Weather App

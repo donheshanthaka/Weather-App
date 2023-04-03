@@ -165,7 +165,7 @@ export default function WeatherComponent(props) {
             <Box display="flex">
               <Typography
                 fontSize="4rem"
-                fontWeight="500"
+                fontWeight="600"
                 lineHeight="1"
                 fontFamily="Open Sans"
                 sx={{ fontSize: "clamp(2rem, calc(8vw + 0.25rem), 4rem)" }}
@@ -323,9 +323,8 @@ export default function WeatherComponent(props) {
                   marginBottom="2rem"
                   fontFamily="Open Sans"
                   fontWeight="500"
-                  fontSize="1.2rem"
                   sx={{
-                    fontSize: "clamp(0.9rem, calc(2vw + 0.25rem), 1.2rem)",
+                    fontSize: "clamp(1rem, calc(2vw + 0.25rem), 1.3rem)",
                   }}
                 >
                   {description}
@@ -339,7 +338,7 @@ export default function WeatherComponent(props) {
               <Box display="flex" justifyContent="center">
                 <Typography
                   fontSize="4rem"
-                  fontWeight="500"
+                  fontWeight="600"
                   lineHeight="1"
                   fontFamily="Open Sans"
                   sx={{ fontSize: "clamp(3rem, calc(8vw + 0.25rem), 4.5rem)" }}

@@ -14,7 +14,8 @@ export default function Footer() {
     >
       <Typography
         color="#a4a4a7"
-        fontWeight="500"
+        fontWeight="600"
+        fontFamily="Open Sans"
         sx={{ letterSpacing: "0.12rem" }}
       >
         2021 Fidenz Technologies
