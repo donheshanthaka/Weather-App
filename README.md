@@ -27,7 +27,7 @@ docker-compose up
 
 ## 🖥 Run Locally:
 
-* To run locally follow the above steps to create the `.env.` file and then type the command below in the project directory
+* To run locally follow the above steps to create the `.env` file and then type the command below in the project directory
 
 ```cmd
 npm run dev
