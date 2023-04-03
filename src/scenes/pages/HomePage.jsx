@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import cities from "../../data/cities.json"
 import dummyData from "../../data/dummy.json"
 import getWeatherDataAPI from "../../api/weather_api"
@@ -13,28 +13,52 @@ import Header from "../components/Header"
 
 
 export default function HomePage() {
+
+  const [weatherData, setWeatherData] = useState([])
+
   const getWeatherData = async (cityCode) => {
     const weatherData = await getWeatherDataAPI(cityCode)
-    console.log(weatherData)
+    // console.log(weatherData)
+    return weatherData
   }
-
+  
   const cityCodes = cities.List.map((city) => {
     return city.CityCode
   })
+
+  // getWeatherData("1248991")
+
+  // console.log(Array.isArray(cityCodes))
+  // console.log(cityCodes)
+  
+  useEffect(() => {
+    
+    const fetchWeatherData = async () => {
+      const data = []
+      for (const code of cityCodes) {
+        const weather = await getWeatherData(code)
+        data.push(weather)
+      }
+      setWeatherData(data)
+    }
+    fetchWeatherData()
+    
+  },[])
+  
+  // console.log(weatherData)
 
   const isGridToggle = useMediaQuery('(min-width:1536px)');
   const isThousandPixelWide = useMediaQuery('(max-width:1000px)')
   const isMobileScreen = useMediaQuery('(max-width:500px)');
   const isTabletScreen = useMediaQuery('(max-width:1750px)');
 
-  const handleClose = () => {
+  const handleClose = (index) => {
     console.log("close")
+    const newData = [...weatherData];
+    newData.splice(index, 1)
+    setWeatherData(newData)
   }
 
-  // getWeatherData("1248991")
-
-  // console.log(Array.isArray(cityCodes))
-  // console.log(cityCodes)
 
   return (
     <Box width="100%" display="flex" flexDirection="column" justifyContent="center" alignItems="center" 
@@ -95,10 +119,28 @@ export default function HomePage() {
           container 
           // backgroundColor="lightblue"
         >
-          {[...Array(5)].map((_, index) => (
+          {weatherData.map((data, index) => (
             <Grid key={index} item xs={12} xl={6} justifySelf="center" width="100%">
               <Box width={isGridToggle? "85%" : isThousandPixelWide? "85%" :  "65%"} display="flex" justifyContent="center" alignItems="center" marginTop="2rem"mx="auto" >
-              <WeatherComponent data={"duuuuuuum"} onRemove={handleClose}/>
+              <WeatherComponent
+                index={index}
+                data={{ 
+                  name: data.name,
+                  country: data.sys.country,
+                  description: data.weather[0].description,
+                  temp: parseInt(data.main.temp),
+                  tempMax: parseInt(data.main.temp_max),
+                  tempMin: parseInt(data.main.temp_min),
+                  pressure: data.main.pressure,
+                  humidity: data.main.humidity,
+                  visibility: data.visibility,
+                  windSpeed: data.wind.speed,
+                  windDegree: data.wind.deg,
+                  sunrise: data.sys.sunrise,
+                  sunset: data.sys.sunset
+                }} 
+                onRemove={handleClose}
+              />
               {/* <h1>Heloooo</h1> */}
               </Box>
             </Grid>

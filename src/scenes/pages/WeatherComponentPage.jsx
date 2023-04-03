@@ -11,6 +11,8 @@ export default function WeatherComponentPage() {
   const isMobileScreen = useMediaQuery("(max-width:500px)")
   const isTabletScreen = useMediaQuery("(max-width:1750px)")
 
+  
+
   const location = useLocation()
   const data = location.state.data
 
@@ -44,7 +46,7 @@ export default function WeatherComponentPage() {
           textAlign="center"
           // height="60%"
         >
-          <WeatherComponent selected={true}/>
+          <WeatherComponent data={data} selected={true}/>
         </Box>
       </Box>
       <Footer />

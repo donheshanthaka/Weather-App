@@ -17,6 +17,51 @@ export default function WeatherComponent(props) {
   const isThousandPixelWide = useMediaQuery("(max-width:1000px)")
   const isFiveHundredPixelWide = useMediaQuery("(max-width:500px)")
 
+  console.log(props.index)
+
+  const {
+    name,
+    country,
+    description,
+    temp,
+    tempMax,
+    tempMin,
+    pressure,
+    humidity,
+    visibility,
+    windSpeed,
+    windDegree,
+    sunrise,
+    sunset
+   } = props.data
+
+  const currentDate = new Date();
+
+  const options = {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+    month: "short",
+    day: "numeric",
+  };
+
+  const formattedDate = currentDate.toLocaleString("en-US", options);
+  const timeString = formattedDate.split(', ')[1];
+  const dateString = formattedDate.split(', ')[0];
+
+  const sunriseTime = new Date(sunrise * 1000);
+  const sunsetTime = new Date(sunset * 1000);
+
+  const optionsTwo = {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
+  };
+
+const formattedSunrise = sunriseTime.toLocaleString('en-US', optionsTwo);
+const formattedSunset = sunsetTime.toLocaleString('en-US', optionsTwo);
+
+
   const handleBackArrow = (event) => {
     event.stopPropagation()
     navigate('/')
@@ -31,7 +76,7 @@ export default function WeatherComponent(props) {
 
   const handleRemove = (event) => {
     event.stopPropagation()
-    props.onRemove()
+    props.onRemove(props.index)
   }
 
   return (
@@ -87,9 +132,9 @@ export default function WeatherComponent(props) {
           marginLeft={isSmallScreen ? "0rem" : "2rem"}
           >
             <Typography fontSize="1.8rem" fontWeight="700" fontFamily='Open Sans' sx={{fontSize: "clamp(1rem, calc(4vw + 0.25rem), 1.8rem)"}}>
-              Colombo, LK
+            {`${name}, ${country}`}
             </Typography>
-            <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>9.19am, Feb 8</Typography>
+            <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>{`${timeString}, ${dateString}`}</Typography>
             <Box
               display="flex"
               // backgroundColor="red"
@@ -99,7 +144,7 @@ export default function WeatherComponent(props) {
               marginTop="1.5rem"
             >
               <BsCloud size={40} />
-              <Typography fontFamily='Open Sans' fontWeight="500" fontSize="1.2rem" sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1.2rem)"}}>Few Clouds</Typography>
+              <Typography fontFamily='Open Sans' fontWeight="500" fontSize="1.2rem" sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1.2rem)"}}>{description}</Typography>
             </Box>
           </Box>
   
@@ -118,7 +163,7 @@ export default function WeatherComponent(props) {
             // backgroundColor="yellow"
             >
               <Typography fontSize="4rem" fontWeight="500" lineHeight="1" fontFamily='Open Sans' sx={{fontSize: "clamp(2rem, calc(8vw + 0.25rem), 4rem)"}}>
-                27&deg;
+              {`${temp}`}&deg;
               </Typography>
               <Box alignSelf="flex-end">
                 <Typography fontSize="3rem" fontWeight="500" lineHeight="1" fontFamily='Open Sans' sx={{fontSize: "clamp(1.5rem, calc(6vw + 0.25rem), 3rem)"}}>
@@ -142,7 +187,7 @@ export default function WeatherComponent(props) {
                 // backgroundColor="yellow"
               >
                 <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>
-                Temp Min: 25&deg;
+                Temp Min: {`${tempMin}`}&deg;
                 </Typography>
                 <Box alignSelf="flex-end">
                   <Typography fontSize="0.8rem" fontFamily='Open Sans' sx={{fontSize: "clamp(0.6rem, calc(1.5vw + 0.25rem), 0.8rem)"}}>
@@ -155,7 +200,7 @@ export default function WeatherComponent(props) {
                 // backgroundColor="yellow"
               >
                 <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>
-                Temp Max: 25&deg;
+                Temp Max: {`${tempMin}`}&deg;
                 </Typography>
                 <Box alignSelf="flex-end">
                   <Typography fontSize="0.8rem" fontFamily='Open Sans' sx={{fontSize: "clamp(0.6rem, calc(1.5vw + 0.25rem), 0.8rem)"}}>
@@ -210,9 +255,9 @@ export default function WeatherComponent(props) {
           // marginLeft={isSmallScreen ? "0rem" : "2rem"}
           >
             <Typography fontSize="1.8rem" fontWeight="700" fontFamily='Open Sans' sx={{fontSize: "clamp(1.5rem, calc(4vw + 0.25rem), 1.8rem)"}}>
-              Colombo, LK
+              {`${name}, ${country}`}
             </Typography>
-            <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>9.19am, Feb 8</Typography>
+            <Typography marginTop="1rem" fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)"}}>{`${timeString}, ${dateString}`}</Typography>
             
           </Box>
   
@@ -222,7 +267,7 @@ export default function WeatherComponent(props) {
             // backgroundColor="blue"
             alignItems="center"
             justifyContent="space-evenly"
-            width={isThousandPixelWide ? "80%" : "60%"}
+            width={isThousandPixelWide ? "90%" : "60%"}
             marginTop="3.5rem"
             marginBottom="2rem"
           >
@@ -236,7 +281,7 @@ export default function WeatherComponent(props) {
                 justifyContent="center"
               >
                 <BsCloud size={isFiveHundredPixelWide ? 45 : 65} />
-                <Typography marginTop="1rem" fontFamily='Open Sans' fontWeight="500" fontSize="1.2rem" sx={{fontSize: "clamp(0.9rem, calc(2vw + 0.25rem), 1.2rem)"}}>Few Clouds</Typography>
+                <Typography marginTop="1rem" fontFamily='Open Sans' fontWeight="500" fontSize="1.2rem" sx={{fontSize: "clamp(0.9rem, calc(2vw + 0.25rem), 1.2rem)"}}>{description}</Typography>
               </Box>
             </Box>
 
@@ -253,7 +298,7 @@ export default function WeatherComponent(props) {
                 backgroundColor=""
               >
                 <Typography fontSize="4rem" fontWeight="500" lineHeight="1" fontFamily='Open Sans' sx={{fontSize: "clamp(3rem, calc(8vw + 0.25rem), 4.5rem)"}}>
-                  27&deg;
+                  {`${temp}`}&deg;
                 </Typography>
                 <Box alignSelf="flex-end">
                   <Typography fontSize="3rem" fontWeight="500" lineHeight="1" fontFamily='Open Sans' sx={{fontSize: "clamp(2rem, calc(6vw + 0.25rem), 3.2rem)"}}>
@@ -277,7 +322,7 @@ export default function WeatherComponent(props) {
                   // backgroundColor="yellow"
                 >
                   <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.9rem, calc(2vw + 0.25rem), 1.25rem)"}}>
-                  Temp Min: 25&deg;
+                  Temp Min: {`${tempMin}`}&deg;
                   </Typography>
                   <Box alignSelf="flex-end">
                     <Typography fontSize="0.8rem" fontFamily='Open Sans' sx={{fontSize: "clamp(0.7rem, calc(1.5vw + 0.25rem), 1rem)"}}>
@@ -290,7 +335,7 @@ export default function WeatherComponent(props) {
                   // backgroundColor="yellow"
                 >
                   <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.9rem, calc(2vw + 0.25rem), 1.25rem)"}}>
-                  Temp Max: 25&deg;
+                  Temp Max: {`${tempMax}`}&deg;
                   </Typography>
                   <Box alignSelf="flex-end">
                     <Typography fontSize="0.8rem" fontFamily='Open Sans' sx={{fontSize: "clamp(0.7rem, calc(1.5vw + 0.25rem), 1rem)"}}>
@@ -325,33 +370,33 @@ export default function WeatherComponent(props) {
         borderRadius="0 0 0.75rem 0.75rem"
       >
         <Box display="flex" flexDirection="column" justifyContent="center" gap="0.25rem" marginRight="1rem">
-          <Box display="flex" alignItems="baseline" gap="0.5em">
+          <Box display="flex" alignItems="baseline" gap="0.5em" flexDirection={isFiveHundredPixelWide ? "column" : "row"} >
             <Typography fontWeight="bold" fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>Pressure:</Typography>
-            <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>1018hPa</Typography>
+            <Typography fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>{pressure}hPa</Typography>
           </Box>
-          <Box display="flex" alignItems="baseline" gap="0.5rem">
+          <Box display="flex" alignItems="baseline" gap="0.5rem" flexDirection={isFiveHundredPixelWide ? "column" : "row"} >
             <Typography fontWeight="bold" fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>Humidity:</Typography>
-            <Typography fontFamily='Open Sans'  sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>78%</Typography>
+            <Typography fontFamily='Open Sans'  sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>{humidity}%</Typography>
           </Box>
-          <Box display="flex" alignItems="baseline" gap="0.5rem">
+          <Box display="flex" alignItems="baseline" gap="0.5rem" flexDirection={isFiveHundredPixelWide ? "column" : "row"} >
             <Typography fontWeight="bold" fontFamily='Open Sans' sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>Visibility:</Typography>
-            <Typography fontFamily='Open Sans'  sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>8.0km</Typography>
+            <Typography fontFamily='Open Sans'  sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>{visibility / 1000}km</Typography>
           </Box>
         </Box>
         <Divider color="gray" orientation="vertical" flexItem/>
         <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" gap="0.5rem" margin="0 1rem">
           <NearMeOutlinedIcon fontSize={isSmallScreen ? "small" : "large"}/>
-          <Typography sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}} fontFamily='Open Sans' fontWeight="500">4.0m/s 120 Degree</Typography>
+          <Typography sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}} fontFamily='Open Sans' fontWeight="500">{windSpeed}m/s {windDegree} Degree</Typography>
         </Box>
         <Divider color="gray" orientation="vertical" flexItem/>
-        <Box display="flex" flexDirection="column" justifyContent="center" gap="0.25rem" marginLeft="1rem">
-        <Box display="flex" alignItems="baseline" gap="0.5em" >
+        <Box display="flex" flexDirection="column" justifyContent="center" gap="0.25rem" marginLeft="1rem" >
+          <Box display="flex" alignItems="baseline" gap="0.5em"  flexDirection={isFiveHundredPixelWide ? "column" : "row"} >
             <Typography fontWeight="bold" fontFamily='Open Sans'  sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>Sunrise:</Typography>
-            <Typography fontFamily='Open Sans'  sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>6:05am</Typography>
+            <Typography fontFamily='Open Sans'  sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>{formattedSunrise}</Typography>
           </Box>
-          <Box display="flex" alignItems="baseline" gap="0.5rem">
+          <Box display="flex" alignItems="baseline" gap="0.5rem" flexDirection={isFiveHundredPixelWide ? "column" : "row"} >
             <Typography fontWeight="bold" fontFamily='Open Sans'  sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>Sunset:</Typography>
-            <Typography fontFamily='Open Sans'  sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>6:05pm</Typography>
+            <Typography fontFamily='Open Sans'  sx={{fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)"}}>{formattedSunset}</Typography>
           </Box>
         </Box>
       </Box>
