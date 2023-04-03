@@ -4,11 +4,13 @@ import { Box, Typography } from "@mui/material"
 export default function Footer() {
   return (
     <Box
+      display="flex"
       backgroundColor="#30333d"
       width="100%"
+      height="10vh"
+      justifyContent="center"
+      alignItems="center"
       textAlign="center"
-      marginTop="5.5rem"
-      padding="2.3rem 0"
     >
       <Typography
         color="#a4a4a7"

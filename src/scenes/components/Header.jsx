@@ -7,11 +7,8 @@ export default function Header() {
     <Box
       display="flex"
       justifyContent="center"
-      alignItems="flex-end"
-      // marginTop="5.8rem"
-      height="135px"
-      marginBottom="3.4rem"
-      // backgroundColor="red"
+      alignItems="center"
+      height="20vh"
     >
       <Box
         sx={{
@@ -24,7 +21,12 @@ export default function Header() {
           zIndex: 1,
         }}
       />
-      <Typography marginLeft="1.1rem" fontSize="2rem" fontWeight="500">
+      <Typography
+        marginLeft="1.1rem"
+        fontSize="2rem"
+        fontWeight="500"
+        sx={{ fontSize: "clamp(1.2rem, calc(8vw + 0.25rem), 2rem)" }}
+      >
         Weather App
       </Typography>
     </Box>
