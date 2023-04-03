@@ -11,7 +11,6 @@ export default function SearchBar() {
       display="flex"
       justifyContent="center"
       alignItems="center"
-      // marginTop="3.4rem"
       marginBottom={isMobileScreen ? "2rem" : "3.4rem"}
     >
       <TextField

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react"
 import cities from "../../data/cities.json"
 import getWeatherDataAPI from "../../api/weather_api"
 import WeatherComponent from "../components/WeatherComponent"
-import { Box, useMediaQuery } from "@mui/material"
-import { Grid } from "@mui/material"
+import { Box, useMediaQuery, Grid  } from "@mui/material"
 import randomHueValue from "../../utils/random_hue"
 import backgroundImage from "../../assets/header_bg.png"
 import Footer from "../components/Footer"
@@ -79,7 +78,6 @@ export default function HomePage() {
 
           <Box
             width={isMobileScreen ? "94%" : isTabletScreen ? "78%" : "64%"}
-            padding="0rem 0rem"
             display="flex"
             justifyContent="center"
             alignItems="center"

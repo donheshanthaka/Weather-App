@@ -8,23 +8,15 @@ import { useLocation } from "react-router-dom"
 
 export default function WeatherComponentPage() {
   const isThousandPixelWide = useMediaQuery("(max-width:1000px)")
-  const isMobileScreen = useMediaQuery("(max-width:500px)")
-  const isTabletScreen = useMediaQuery("(max-width:1750px)")
-
-  
 
   const location = useLocation()
   const data = location.state.data
 
-  console.log(data)
   return (
     <Box
       width="100%"
-      display="flex"
       flexDirection="column"
-      alignItems="center"
       backgroundColor="#1f2128"
-      // backgroundColor="lightgreen"
       minHeight="100vh"
       sx={{
         backgroundImage: `url(${backgroundImage})`,
@@ -33,20 +25,16 @@ export default function WeatherComponentPage() {
       }}
     >
       <Header />
-      <Box width="100%" display="flex" justifyContent="center" height="61.5vh" backgroundColor="red">
-
+      <Box width="100%" display="flex" justifyContent="center" minHeight="70vh">
         <Box
-          // backgroundColor="lightyellow"
-          // width={isMobileScreen ? "94%" : isTabletScreen ? "78%" : "64%"}
           width={isThousandPixelWide ? "80%" : "58%"}
-          padding="0rem 0rem"
           display="flex"
           justifyContent="center"
           alignItems="center"
           textAlign="center"
-          // height="60%"
+          marginBottom="3rem"
         >
-          <WeatherComponent data={data} selected={true}/>
+          <WeatherComponent data={data} selected={true} />
         </Box>
       </Box>
       <Footer />
