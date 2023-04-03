@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: my-weather-app
+    image: my-weather-app
+    build:
+      context: .
+    environment:
+      VITE_APP_OPENWEATHER_API_KEY: ${VITE_APP_OPENWEATHER_API_KEY}
+    ports:
+      - "8000:8000"
