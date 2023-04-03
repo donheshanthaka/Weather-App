@@ -41,7 +41,6 @@ export default function HomePage() {
   }
 
   const handleClose = (index) => {
-    console.log("close")
     const newData = [...weatherData]
     newData.splice(index, 1)
     setWeatherData(newData)
