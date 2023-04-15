@@ -50,16 +50,13 @@ export default function HomePage() {
   useEffect(() => {
     const fetchWeatherData = async () => {
       const data = []
+      const tempColors = []
       for (const code of cityCodes) {
         const weather = await getWeatherData(code.CityCode, code.timeStamp)
         data.push(weather)
-      }
-      setWeatherData(data)
-
-      const tempColors = []
-      for (let i = 0; i < data.length; i++) {
         tempColors.push(randomHueValue())
       }
+      setWeatherData(data)
       setColors(tempColors)
     }
     fetchWeatherData()
