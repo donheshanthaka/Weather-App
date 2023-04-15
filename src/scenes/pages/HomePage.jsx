@@ -18,15 +18,16 @@ export default function HomePage() {
   const isTabletScreen = useMediaQuery("(max-width:1750px)")
 
   const cityCodes = cities.List.map((city) => {
-    return city.CityCode
+    return city
   })
 
-  const getWeatherData = async (cityCode) => {
+
+  const getWeatherData = async (cityCode, timeStampData) => {
     const cachedData = localStorage.getItem(cityCode)
     if (cachedData) {
       const { data, timestamp } = JSON.parse(cachedData)
       // Check if the cached data is less than 5 minutes old
-      if (Date.now() - timestamp < 5 * 60 * 1000) {
+      if (Date.now() - timestamp < timeStampData) {
         return data
       }
     }
@@ -50,7 +51,7 @@ export default function HomePage() {
     const fetchWeatherData = async () => {
       const data = []
       for (const code of cityCodes) {
-        const weather = await getWeatherData(code)
+        const weather = await getWeatherData(code.CityCode, code.timeStamp)
         data.push(weather)
       }
       setWeatherData(data)
