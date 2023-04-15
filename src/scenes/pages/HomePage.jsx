@@ -11,7 +11,6 @@ import SearchBar from "../components/SearchBar"
 
 export default function HomePage() {
   const [weatherData, setWeatherData] = useState([])
-  const [colors, setColors] = useState([])
   const isGridToggle = useMediaQuery("(min-width:1536px)")
   const isThousandPixelWide = useMediaQuery("(max-width:1000px)")
   const isMobileScreen = useMediaQuery("(max-width:500px)")
@@ -21,6 +20,12 @@ export default function HomePage() {
     return city
   })
 
+  const setCachedData = (cityCode, weatherData) => {
+    localStorage.setItem(
+      cityCode,
+      JSON.stringify({ data: weatherData, timestamp: Date.now() })
+    )
+  }
 
   const getWeatherData = async (cityCode, timeStampData) => {
     const cachedData = localStorage.getItem(cityCode)
@@ -30,14 +35,15 @@ export default function HomePage() {
       if (Date.now() - timestamp < timeStampData) {
         return data
       }
+      const weatherData = await getWeatherDataAPI(cityCode)
+      weatherData.hue = data.hue
+      setCachedData(cityCode, weatherData)
+      return weatherData
     }
-
+    // Run during the the first time the page is loaded
     const weatherData = await getWeatherDataAPI(cityCode)
-    // Cache the data with the current timestamp
-    localStorage.setItem(
-      cityCode,
-      JSON.stringify({ data: weatherData, timestamp: Date.now() })
-    )
+    weatherData.hue = randomHueValue()
+    setCachedData(cityCode, weatherData)
     return weatherData
   }
 
@@ -50,14 +56,12 @@ export default function HomePage() {
   useEffect(() => {
     const fetchWeatherData = async () => {
       const data = []
-      const tempColors = []
-      for (const code of cityCodes) {
-        const weather = await getWeatherData(code.CityCode, code.timeStamp)
+      for (const city of cityCodes) {
+        const cityCode = city.CityCode
+        const weather = await getWeatherData(cityCode, city.timeStamp)
         data.push(weather)
-        tempColors.push(randomHueValue())
       }
       setWeatherData(data)
-      setColors(tempColors)
     }
     fetchWeatherData()
   }, [])
@@ -134,7 +138,7 @@ export default function HomePage() {
                         icon: data.weather[0].icon,
                         lon: data.coord.lon,
                         lat: data.coord.lat,
-                        hue: colors[index],
+                        hue: data.hue,
                       }}
                       onRemove={handleClose}
                     />
