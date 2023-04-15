@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import cities from "../../data/cities.json"
 import getWeatherDataAPI from "../../api/weather_api"
 import WeatherComponent from "../components/WeatherComponent"
-import { Box, useMediaQuery, Grid } from "@mui/material"
+import { Box, useMediaQuery, Grid, Snackbar, Alert } from "@mui/material"
 import randomHueValue from "../../utils/random_hue"
 import backgroundImage from "../../assets/header_bg.png"
 import Footer from "../components/Footer"
@@ -11,6 +11,8 @@ import SearchBar from "../components/SearchBar"
 
 export default function HomePage() {
   const [weatherData, setWeatherData] = useState([])
+  const [error, setError] = useState("")
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
   const isGridToggle = useMediaQuery("(min-width:1536px)")
   const isThousandPixelWide = useMediaQuery("(max-width:1000px)")
   const isMobileScreen = useMediaQuery("(max-width:500px)")
@@ -36,12 +38,22 @@ export default function HomePage() {
         return data
       }
       const weatherData = await getWeatherDataAPI(cityCode)
+      if (weatherData.cod != 200) {
+        setError(weatherData.message)
+        setOpenErrorSnackbar(true)
+        return
+      }
       weatherData.hue = data.hue
       setCachedData(cityCode, weatherData)
       return weatherData
     }
     // Run during the the first time the page is loaded
     const weatherData = await getWeatherDataAPI(cityCode)
+    if (weatherData.cod != 200) {
+      setError(weatherData.message)
+      setOpenErrorSnackbar(true)
+      return
+    }
     weatherData.hue = randomHueValue()
     setCachedData(cityCode, weatherData)
     return weatherData
@@ -59,7 +71,10 @@ export default function HomePage() {
       for (const city of cityCodes) {
         const cityCode = city.CityCode
         const weather = await getWeatherData(cityCode, city.timeStamp)
-        data.push(weather)
+        //  only add to list if a proper data format is returned
+        if (weather) {
+          data.push(weather)
+        }
       }
       setWeatherData(data)
     }
@@ -150,6 +165,17 @@ export default function HomePage() {
         </Box>
         <Footer />
       </Box>
+      <Snackbar
+        sx={{ marginTop: "0rem" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={openErrorSnackbar}
+        onClose={() => setOpenErrorSnackbar(false)}
+        autoHideDuration={5000}
+      >
+        <Alert variant="filled" severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }
