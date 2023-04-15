@@ -40,6 +40,10 @@ export default function WeatherComponent(props) {
   const isThousandPixelWide = useMediaQuery("(max-width:1000px)")
   const isFiveHundredPixelWide = useMediaQuery("(max-width:500px)")
   const time = getTime(lon, lat)
+  const IMAGE_BASE_URL =
+    import.meta.env.VITE_APP_OPENWEATHER_IMAGE_ICON_URL ||
+    process.env.VITE_APP_OPENWEATHER_IMAGE_ICON_URL ||
+    "https://openweathermap.org/img/wn/"
 
   const sunriseTime = new Date(sunrise * 1000)
   const sunsetTime = new Date(sunset * 1000)
@@ -135,7 +139,7 @@ export default function WeatherComponent(props) {
             >
               <Box>
                 <img
-                  src={`https://openweathermap.org/img/wn/${icon}@2x.png`}
+                  src={`${IMAGE_BASE_URL}${icon}@2x.png`}
                   alt="weather icon"
                   style={{
                     width: "70px",
