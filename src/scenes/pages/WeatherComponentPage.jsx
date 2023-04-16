@@ -10,7 +10,7 @@ export default function WeatherComponentPage() {
   const isThousandPixelWide = useMediaQuery("(max-width:1000px)")
 
   const location = useLocation()
-  const data = location.state.data
+  const cityCode = location.state.city
 
   return (
     <Box
@@ -34,7 +34,7 @@ export default function WeatherComponentPage() {
           textAlign="center"
           marginBottom="3rem"
         >
-          <WeatherComponent data={data} selected={true} />
+          <WeatherComponent city={cityCode} selected={true} />
         </Box>
       </Box>
       <Footer />

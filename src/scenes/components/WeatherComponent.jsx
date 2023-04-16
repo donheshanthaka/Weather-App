@@ -12,27 +12,27 @@ import CloseIcon from "@mui/icons-material/Close"
 import cloudImage from "../../assets/weather_card_cloud.png"
 import { useNavigate } from "react-router-dom"
 import getTime from "../../utils/get_time"
+import { useWeatherContext } from "../../state"
 
 export default function WeatherComponent(props) {
+  const { weatherData } = useWeatherContext()
+
   const {
     name,
-    country,
-    description,
-    temp,
-    tempMax,
-    tempMin,
-    pressure,
-    humidity,
+    sys: { country },
+    weather: [{ description }],
+    main: { temp, temp_max: tempMax, temp_min: tempMin, pressure, humidity },
     visibility,
-    windSpeed,
-    windDegree,
-    sunrise,
-    sunset,
-    icon,
-    lon,
-    lat,
+    wind: { speed: windSpeed, deg: windDegree },
+    sys: { sunrise, sunset },
+    weather: [{ icon }],
+    coord: { lon, lat },
     hue,
-  } = props.data
+  } = weatherData[props.city]
+
+  const tempInt = parseInt(temp)
+  const tempMaxInt = parseInt(tempMax)
+  const tempMinInt = parseInt(tempMin)
 
   const navigate = useNavigate()
   const isSelected = props.selected ? true : false
@@ -65,12 +65,12 @@ export default function WeatherComponent(props) {
     if (isSelected) {
       return
     }
-    navigate("/selectedWeather", { state: { data: props.data } })
+    navigate("/selectedWeather", { state: { city: props.city } })
   }
 
   const handleRemove = (event) => {
     event.stopPropagation()
-    props.onRemove(props.index)
+    props.onRemove(props.city)
   }
 
   return (
@@ -174,7 +174,7 @@ export default function WeatherComponent(props) {
                 fontFamily="Open Sans"
                 sx={{ fontSize: "clamp(2rem, calc(8vw + 0.25rem), 4rem)" }}
               >
-                {`${temp}`}&deg;
+                {`${tempInt}`}&deg;
               </Typography>
               <Box alignSelf="flex-end">
                 <Typography
@@ -202,7 +202,7 @@ export default function WeatherComponent(props) {
                   fontFamily="Open Sans"
                   sx={{ fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)" }}
                 >
-                  Temp Min: {`${tempMin}`}&deg;
+                  Temp Min: {`${tempMinInt}`}&deg;
                 </Typography>
                 <Box alignSelf="flex-end">
                   <Typography
@@ -221,7 +221,7 @@ export default function WeatherComponent(props) {
                   fontFamily="Open Sans"
                   sx={{ fontSize: "clamp(0.8rem, calc(2vw + 0.25rem), 1rem)" }}
                 >
-                  Temp Max: {`${tempMax}`}&deg;
+                  Temp Max: {`${tempMaxInt}`}&deg;
                 </Typography>
                 <Box alignSelf="flex-end">
                   <Typography
@@ -347,7 +347,7 @@ export default function WeatherComponent(props) {
                   fontFamily="Open Sans"
                   sx={{ fontSize: "clamp(3rem, calc(8vw + 0.25rem), 4.5rem)" }}
                 >
-                  {`${temp}`}&deg;
+                  {`${tempInt}`}&deg;
                 </Typography>
                 <Box alignSelf="flex-end">
                   <Typography
@@ -379,7 +379,7 @@ export default function WeatherComponent(props) {
                       fontSize: "clamp(0.9rem, calc(2vw + 0.25rem), 1.25rem)",
                     }}
                   >
-                    Temp Min: {`${tempMin}`}&deg;
+                    Temp Min: {`${tempMinInt}`}&deg;
                   </Typography>
                   <Box alignSelf="flex-end">
                     <Typography
@@ -400,7 +400,7 @@ export default function WeatherComponent(props) {
                       fontSize: "clamp(0.9rem, calc(2vw + 0.25rem), 1.25rem)",
                     }}
                   >
-                    Temp Max: {`${tempMax}`}&deg;
+                    Temp Max: {`${tempMaxInt}`}&deg;
                   </Typography>
                   <Box alignSelf="flex-end">
                     <Typography

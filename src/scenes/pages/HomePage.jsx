@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react"
+import { Box, useMediaQuery, Grid, Snackbar, Alert } from "@mui/material"
+import { useWeatherContext } from "../../state"
+import backgroundImage from "../../assets/header_bg.png"
 import cities from "../../data/cities.json"
 import getWeatherDataAPI from "../../api/weather_api"
-import WeatherComponent from "../components/WeatherComponent"
-import { Box, useMediaQuery, Grid, Snackbar, Alert } from "@mui/material"
 import randomHueValue from "../../utils/random_hue"
-import backgroundImage from "../../assets/header_bg.png"
-import Footer from "../components/Footer"
 import Header from "../components/Header"
 import SearchBar from "../components/SearchBar"
+import Footer from "../components/Footer"
+import WeatherComponent from "../components/WeatherComponent"
 
 export default function HomePage() {
-  const [weatherData, setWeatherData] = useState([])
+  const { weatherData, setWeatherData } = useWeatherContext()
   const [error, setError] = useState("")
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
   const isGridToggle = useMediaQuery("(min-width:1536px)")
@@ -59,24 +60,25 @@ export default function HomePage() {
     return weatherData
   }
 
-  const handleClose = (index) => {
-    const newData = [...weatherData]
-    newData.splice(index, 1)
+  const handleClose = (city) => {
+    const newData = { ...weatherData }
+    delete newData[city]
     setWeatherData(newData)
   }
 
   useEffect(() => {
     const fetchWeatherData = async () => {
-      const data = []
+      const data = {}
       for (const city of cityCodes) {
         const cityCode = city.CityCode
         const weather = await getWeatherData(cityCode, city.timeStamp)
         //  only add to list if a proper data format is returned
         if (weather) {
-          data.push(weather)
+          data[cityCode] = weather
         }
       }
       setWeatherData(data)
+      console.log(Object.keys(data))
     }
     fetchWeatherData()
   }, [])
@@ -114,7 +116,7 @@ export default function HomePage() {
             marginBottom="5.2rem"
           >
             <Grid container>
-              {weatherData.map((data, index) => (
+              {Object.keys(weatherData).map((cityCode, index) => (
                 <Grid
                   key={index}
                   item
@@ -135,26 +137,7 @@ export default function HomePage() {
                   >
                     <WeatherComponent
                       index={index}
-                      data={{
-                        name: data.name,
-                        country: data.sys.country,
-                        weather: data.weather[0].main,
-                        description: data.weather[0].description,
-                        temp: parseInt(data.main.temp),
-                        tempMax: parseInt(data.main.temp_max),
-                        tempMin: parseInt(data.main.temp_min),
-                        pressure: data.main.pressure,
-                        humidity: data.main.humidity,
-                        visibility: data.visibility,
-                        windSpeed: data.wind.speed,
-                        windDegree: data.wind.deg,
-                        sunrise: data.sys.sunrise,
-                        sunset: data.sys.sunset,
-                        icon: data.weather[0].icon,
-                        lon: data.coord.lon,
-                        lat: data.coord.lat,
-                        hue: data.hue,
-                      }}
+                      city={cityCode}
                       onRemove={handleClose}
                     />
                   </Box>
@@ -166,7 +149,6 @@ export default function HomePage() {
         <Footer />
       </Box>
       <Snackbar
-        sx={{ marginTop: "0rem" }}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={openErrorSnackbar}
         onClose={() => setOpenErrorSnackbar(false)}
