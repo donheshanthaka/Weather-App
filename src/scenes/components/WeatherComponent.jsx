@@ -65,7 +65,7 @@ export default function WeatherComponent(props) {
     if (isSelected) {
       return
     }
-    navigate("/selectedWeather", { state: { city: props.city } })
+    navigate(`/selectedWeather/${props.city}`)
   }
 
   const handleRemove = (event) => {

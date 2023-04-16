@@ -24,29 +24,40 @@ export default function HomePage() {
   })
 
   const setCachedData = (cityCode, weatherData) => {
-    localStorage.setItem(
-      cityCode,
-      JSON.stringify({ data: weatherData, timestamp: Date.now() })
-    )
+    const cachedWeatherData = localStorage.getItem("weatherData")
+    if (cachedWeatherData) {
+      const data = { ...JSON.parse(cachedWeatherData) }
+      data[cityCode] = weatherData
+      data[cityCode]["timestamp"] = Date.now()
+      localStorage.setItem("weatherData", JSON.stringify(data))
+    } else {
+      const data = {}
+      data[cityCode] = weatherData
+      data[cityCode]["timestamp"] = Date.now()
+      localStorage.setItem("weatherData", JSON.stringify(data))
+    }
   }
 
   const getWeatherData = async (cityCode, timeStampData) => {
-    const cachedData = localStorage.getItem(cityCode)
+    const cachedData = localStorage.getItem("weatherData")
     if (cachedData) {
-      const { data, timestamp } = JSON.parse(cachedData)
-      // Check if the cached data is less than 5 minutes old
-      if (Date.now() - timestamp < timeStampData) {
-        return data
+      const data = JSON.parse(cachedData)
+      const cityData = data[cityCode]
+      if (cityData) {
+        // Check if the cached data is less than 5 minutes old
+        if (Date.now() - cityData.timestamp < timeStampData) {
+          return cityData
+        }
+        const weatherData = await getWeatherDataAPI(cityCode)
+        if (weatherData.cod != 200) {
+          setError(weatherData.message)
+          setOpenErrorSnackbar(true)
+          return
+        }
+        weatherData.hue = cityData.hue
+        setCachedData(cityCode, weatherData)
+        return weatherData
       }
-      const weatherData = await getWeatherDataAPI(cityCode)
-      if (weatherData.cod != 200) {
-        setError(weatherData.message)
-        setOpenErrorSnackbar(true)
-        return
-      }
-      weatherData.hue = data.hue
-      setCachedData(cityCode, weatherData)
-      return weatherData
     }
     // Run during the the first time the page is loaded
     const weatherData = await getWeatherDataAPI(cityCode)
@@ -78,7 +89,6 @@ export default function HomePage() {
         }
       }
       setWeatherData(data)
-      console.log(Object.keys(data))
     }
     fetchWeatherData()
   }, [])

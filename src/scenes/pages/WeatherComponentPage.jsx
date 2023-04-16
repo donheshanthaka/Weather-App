@@ -1,16 +1,22 @@
-import React from "react"
-import WeatherComponent from "../components/WeatherComponent"
+import React, { useEffect } from "react"
+import { useParams } from "react-router-dom"
 import { Box, useMediaQuery } from "@mui/material"
+import { useWeatherContext } from "../../state"
 import backgroundImage from "../../assets/header_bg.png"
-import Footer from "../components/Footer"
 import Header from "../components/Header"
-import { useLocation } from "react-router-dom"
+import WeatherComponent from "../components/WeatherComponent"
+import Footer from "../components/Footer"
 
 export default function WeatherComponentPage() {
   const isThousandPixelWide = useMediaQuery("(max-width:1000px)")
+  const { weatherData, setWeatherData } = useWeatherContext()
 
-  const location = useLocation()
-  const cityCode = location.state.city
+  const { cityCode } = useParams()
+
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem("weatherData"))
+    setWeatherData(storedData)
+  }, [])
 
   return (
     <Box
@@ -34,7 +40,9 @@ export default function WeatherComponentPage() {
           textAlign="center"
           marginBottom="3rem"
         >
-          <WeatherComponent city={cityCode} selected={true} />
+          {Object.keys(weatherData).length > 0 && (
+            <WeatherComponent city={cityCode} selected={true} />
+          )}
         </Box>
       </Box>
       <Footer />
