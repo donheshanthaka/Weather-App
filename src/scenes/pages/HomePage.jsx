@@ -14,6 +14,7 @@ export default function HomePage() {
   const { weatherData, setWeatherData } = useWeatherContext()
   const [error, setError] = useState("")
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
+  const enableLogging = process.env.NODE_ENV === "development"
   const isGridToggle = useMediaQuery("(min-width:1536px)")
   const isThousandPixelWide = useMediaQuery("(max-width:1000px)")
   const isMobileScreen = useMediaQuery("(max-width:500px)")
@@ -54,7 +55,9 @@ export default function HomePage() {
           setCachedData(cityCode, weatherData)
           return weatherData
         } catch (error) {
-          console.error(`Failed to fetch weather data: ${error.message}`)
+          if (enableLogging) {
+            console.error(`Failed to fetch weather data: ${error.message}`)
+          }
           setError(error.message)
           setOpenErrorSnackbar(true)
           return
@@ -67,7 +70,9 @@ export default function HomePage() {
       setCachedData(cityCode, weatherData)
       return weatherData
     } catch (error) {
-      console.error(`Failed to fetch weather data: ${error.message}`)
+      if (enableLogging) {
+        console.error(`Failed to fetch weather data: ${error.message}`)
+      }
       setError(error.message)
       setOpenErrorSnackbar(true)
       return

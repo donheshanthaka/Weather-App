@@ -1,9 +1,13 @@
+import LogRocket from "logrocket"
+
 /**
  * Fetches weather data for a given city code from the OpenWeather API.
  * @param {number} cityCode - The city code to fetch weather data for.
  * @returns {Promise<object>} A Promise that resolves to an object representing the weather data for the given city code.
  */
 const getWeatherDataAPI = async (cityCode) => {
+  const enableLogging = process.env.NODE_ENV === "development"
+
   try {
     const OPENWEATHER_API_KEY =
       import.meta.env.VITE_APP_OPENWEATHER_API_KEY ??
@@ -20,21 +24,35 @@ const getWeatherDataAPI = async (cityCode) => {
 
     if (!response.ok) {
       const error = await response.json()
-      console.error(`OpenWeather API error: ${error.message}`)
-      throw new Error("Failed to fetch weather data")
+      if (enableLogging) {
+        console.error(`OpenWeather API error: ${error.message}`)
+      }
+
+      if (error.cod === "404") {
+        throw new Error(
+          "Invalid city code. Please try again with a valid city code."
+        )
+      } else {
+        throw new Error("Failed to fetch weather data")
+      }
     }
 
     const data = await response.json()
 
     // Validate response data
     if (!data || !data.main || !data.weather) {
-      console.error("Unexpected response data from OpenWeather API")
+      if (enableLogging) {
+        console.error("Unexpected response data from OpenWeather API")
+      }
       throw new Error("Failed to parse weather data")
     }
 
     return data
   } catch (error) {
-    console.error(`Error fetching weather data: ${error.message}`)
+    if (enableLogging) {
+      console.error(`Error fetching weather data: ${error.message}`)
+    }
+    LogRocket.error(error)
     throw error
   }
 }
