@@ -6,7 +6,7 @@ import cities from "../../data/cities.json"
 import getWeatherDataAPI from "../../api/weather_api"
 import randomHueValue from "../../utils/random_hue"
 import Header from "../components/Header"
-import SearchBar from "../components/SearchBar"
+import AddCity from "../components/AddCity"
 import Footer from "../components/Footer"
 import WeatherComponentLayout from "../components/weather_component/WeatherComponentLayout"
 
@@ -28,11 +28,10 @@ export default function HomePage() {
     const cachedWeatherData = localStorage.getItem("weatherData")
     const data = cachedWeatherData ? { ...JSON.parse(cachedWeatherData) } : {}
     data[cityCode] = weatherData
-    data[cityCode]["timestamp"] = Date.now()
     localStorage.setItem("weatherData", JSON.stringify(data))
   }
 
-  const getWeatherData = async (cityCode, timeStampData) => {
+  const getWeatherData = async (cityCode, timeStampData = 300000) => {
     const cachedData = localStorage.getItem("weatherData")
 
     const handleFetchError = (error) => {
@@ -51,20 +50,25 @@ export default function HomePage() {
       if (cityData && Date.now() - cityData.timestamp < timeStampData) {
         return cityData
       }
-
-      try {
-        const weatherData = await getWeatherDataAPI(cityCode)
-        weatherData.hue = cityData?.hue || randomHueValue()
-        setCachedData(cityCode, weatherData)
-        return weatherData
-      } catch (error) {
-        handleFetchError(error)
+      if (cityData) {
+        try {
+          const weatherData = await getWeatherDataAPI(cityCode)
+          weatherData.hue = cityData?.hue || randomHueValue()
+          weatherData.timestamp = Date.now()
+          weatherData.createdAt = cityData.createdAt
+          setCachedData(cityCode, weatherData)
+          return weatherData
+        } catch (error) {
+          handleFetchError(error)
+        }
       }
     }
 
     try {
       const weatherData = await getWeatherDataAPI(cityCode)
       weatherData.hue = randomHueValue()
+      weatherData.timestamp = Date.now()
+      weatherData.createdAt = Date.now()
       setCachedData(cityCode, weatherData)
       return weatherData
     } catch (error) {
@@ -116,7 +120,7 @@ export default function HomePage() {
         >
           <Header />
 
-          <SearchBar />
+          <AddCity />
 
           <Box
             width={isMobileScreen ? "94%" : isTabletScreen ? "78%" : "64%"}
@@ -127,33 +131,39 @@ export default function HomePage() {
             marginBottom="5.2rem"
           >
             <Grid container>
-              {Object.keys(weatherData).map((cityCode, index) => (
-                <Grid
-                  key={index}
-                  item
-                  xs={12}
-                  xl={6}
-                  justifySelf="center"
-                  width="100%"
-                >
-                  <Box
-                    width={
-                      isGridToggle ? "85%" : isThousandPixelWide ? "85%" : "65%"
-                    }
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    marginTop="2rem"
-                    mx="auto"
+              {Object.entries(weatherData)
+                .sort(([, a], [, b]) => b.createdAt - a.createdAt)
+                .map(([cityCode], index) => (
+                  <Grid
+                    key={index}
+                    item
+                    xs={12}
+                    xl={6}
+                    justifySelf="center"
+                    width="100%"
                   >
-                    <WeatherComponentLayout
-                      index={index}
-                      city={cityCode}
-                      onRemove={handleClose}
-                    />
-                  </Box>
-                </Grid>
-              ))}
+                    <Box
+                      width={
+                        isGridToggle
+                          ? "85%"
+                          : isThousandPixelWide
+                          ? "85%"
+                          : "65%"
+                      }
+                      display="flex"
+                      justifyContent="center"
+                      alignItems="center"
+                      marginTop="2rem"
+                      mx="auto"
+                    >
+                      <WeatherComponentLayout
+                        index={index}
+                        city={cityCode}
+                        onRemove={handleClose}
+                      />
+                    </Box>
+                  </Grid>
+                ))}
             </Grid>
           </Box>
         </Box>
