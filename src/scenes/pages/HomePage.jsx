@@ -20,9 +20,10 @@ export default function HomePage() {
   const isMobileScreen = useMediaQuery("(max-width:500px)")
   const isTabletScreen = useMediaQuery("(max-width:1750px)")
 
-  const cityCodes = cities.List.map((city) => {
-    return city
-  })
+  const citiesJSONObject = cities.List.reduce((acc, city) => {
+    acc[city.CityCode] = city
+    return acc
+  }, {})
 
   const setCachedData = (cityCode, weatherData) => {
     const cachedWeatherData = localStorage.getItem("weatherData")
@@ -76,18 +77,16 @@ export default function HomePage() {
     }
   }
 
-  const handleClose = (city) => {
-    const newData = { ...weatherData }
-    delete newData[city]
-    setWeatherData(newData)
-  }
-
   useEffect(() => {
     const fetchWeatherData = async () => {
+      const cachedWeatherData = localStorage.getItem("weatherData")
+      const cityData = cachedWeatherData
+        ? { ...JSON.parse(cachedWeatherData) }
+        : citiesJSONObject
       const data = {}
-      for (const city of cityCodes) {
-        const cityCode = city.CityCode
-        const weather = await getWeatherData(cityCode, city.timeStamp)
+      for (const cityCode in cityData) {
+        const timestamp = cityData[cityCode]["timestamp"]
+        const weather = await getWeatherData(cityCode, timestamp)
         //  only add to list if a proper data format is returned
         if (weather) {
           data[cityCode] = weather
@@ -156,11 +155,7 @@ export default function HomePage() {
                       marginTop="2rem"
                       mx="auto"
                     >
-                      <WeatherComponentLayout
-                        index={index}
-                        city={cityCode}
-                        onRemove={handleClose}
-                      />
+                      <WeatherComponentLayout city={cityCode} />
                     </Box>
                   </Grid>
                 ))}

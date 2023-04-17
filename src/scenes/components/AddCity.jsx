@@ -19,6 +19,13 @@ export default function AddCity() {
   const [error, setError] = useState("")
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
 
+  const setCachedData = (cityCode, newCityData) => {
+    const cachedWeatherData = localStorage.getItem("weatherData")
+    const data = { ...JSON.parse(cachedWeatherData) }
+    data[cityCode] = newCityData
+    localStorage.setItem("weatherData", JSON.stringify(data))
+  }
+
   const handleCityChange = (event) => {
     setCity(event.target.value)
   }
@@ -32,16 +39,17 @@ export default function AddCity() {
       if (newCity.id in weatherData) {
         throw new Error("City already in this list")
       }
+      newCity.hue = randomHueValue()
+      newCity.timestamp = Date.now()
+      newCity.createdAt = Date.now()
       setWeatherData((prevData) => ({
         ...prevData,
         [newCity.id]: {
           ...newCity,
-          hue: randomHueValue(),
-          timestamp: Date.now(),
-          createdAt: Date.now(),
         },
       }))
       setCity("")
+      setCachedData(newCity.id, newCity)
     } catch (error) {
       if (enableLogging) {
         console.error(`Failed to fetch weather data: ${error.message}`)

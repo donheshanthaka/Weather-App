@@ -58,7 +58,6 @@ export default function WeatherComponentLayout(props) {
 
       <WeatherComponentHeader
         city={props.city}
-        onRemove={props.onRemove}
         selected={props.selected ?? false}
       />
 

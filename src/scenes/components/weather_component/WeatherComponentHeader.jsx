@@ -14,7 +14,7 @@ import getTime from "../../../utils/get_time"
 import { useWeatherContext } from "../../../state"
 
 export default function WeatherComponentHeader(props) {
-  const { weatherData } = useWeatherContext()
+  const { weatherData, setWeatherData } = useWeatherContext()
 
   const {
     name,
@@ -48,7 +48,10 @@ export default function WeatherComponentHeader(props) {
 
   const handleRemove = (event) => {
     event.stopPropagation()
-    props.onRemove(props.city)
+    const newData = { ...weatherData }
+    delete newData[props.city]
+    localStorage.setItem("weatherData", JSON.stringify(newData))
+    setWeatherData(newData)
   }
 
   return (
