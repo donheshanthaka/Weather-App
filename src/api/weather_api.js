@@ -18,10 +18,24 @@ const getWeatherDataAPI = async (cityCode) => {
       `${OPENWEATHER_URL}?id=${cityCode}&units=metric&appid=${OPENWEATHER_API_KEY}`
     )
 
+    if (!response.ok) {
+      const error = await response.json()
+      console.error(`OpenWeather API error: ${error.message}`)
+      throw new Error("Failed to fetch weather data")
+    }
+
     const data = await response.json()
+
+    // Validate response data
+    if (!data || !data.main || !data.weather) {
+      console.error("Unexpected response data from OpenWeather API")
+      throw new Error("Failed to parse weather data")
+    }
+
     return data
   } catch (error) {
-    return { cod: 404, message: error.message }
+    console.error(`Error fetching weather data: ${error.message}`)
+    throw error
   }
 }
 

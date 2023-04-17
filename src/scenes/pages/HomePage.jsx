@@ -48,27 +48,30 @@ export default function HomePage() {
         if (Date.now() - cityData.timestamp < timeStampData) {
           return cityData
         }
-        const weatherData = await getWeatherDataAPI(cityCode)
-        if (weatherData.cod != 200) {
-          setError(weatherData.message)
+        try {
+          const weatherData = await getWeatherDataAPI(cityCode)
+          weatherData.hue = cityData.hue
+          setCachedData(cityCode, weatherData)
+          return weatherData
+        } catch (error) {
+          console.error(`Failed to fetch weather data: ${error.message}`)
+          setError(error.message)
           setOpenErrorSnackbar(true)
           return
         }
-        weatherData.hue = cityData.hue
-        setCachedData(cityCode, weatherData)
-        return weatherData
       }
     }
-    // Run during the the first time the page is loaded
-    const weatherData = await getWeatherDataAPI(cityCode)
-    if (weatherData.cod != 200) {
-      setError(weatherData.message)
+    try {
+      const weatherData = await getWeatherDataAPI(cityCode)
+      weatherData.hue = randomHueValue()
+      setCachedData(cityCode, weatherData)
+      return weatherData
+    } catch (error) {
+      console.error(`Failed to fetch weather data: ${error.message}`)
+      setError(error.message)
       setOpenErrorSnackbar(true)
       return
     }
-    weatherData.hue = randomHueValue()
-    setCachedData(cityCode, weatherData)
-    return weatherData
   }
 
   const handleClose = (city) => {
