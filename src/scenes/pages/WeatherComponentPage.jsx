@@ -4,7 +4,7 @@ import { Box, useMediaQuery } from "@mui/material"
 import { useWeatherContext } from "../../state"
 import backgroundImage from "../../assets/header_bg.png"
 import Header from "../components/Header"
-import WeatherComponent from "../components/WeatherComponent"
+import WeatherComponentLayout from "../components/weather_component/WeatherComponentLayout"
 import Footer from "../components/Footer"
 
 export default function WeatherComponentPage() {
@@ -41,7 +41,7 @@ export default function WeatherComponentPage() {
           marginBottom="3rem"
         >
           {Object.keys(weatherData).length > 0 && (
-            <WeatherComponent city={cityCode} selected={true} />
+            <WeatherComponentLayout city={cityCode} selected={true} />
           )}
         </Box>
       </Box>

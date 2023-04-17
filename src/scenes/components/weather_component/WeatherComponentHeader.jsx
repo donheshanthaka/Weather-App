@@ -1,3 +1,4 @@
+import React from "react"
 import {
   Box,
   Typography,
@@ -5,26 +6,21 @@ import {
   IconButton,
   useMediaQuery,
 } from "@mui/material"
-import React from "react"
-import NearMeOutlinedIcon from "@mui/icons-material/NearMeOutlined"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import CloseIcon from "@mui/icons-material/Close"
-import cloudImage from "../../assets/weather_card_cloud.png"
+import cloudImage from "../../../assets/weather_card_cloud.png"
 import { useNavigate } from "react-router-dom"
-import getTime from "../../utils/get_time"
-import { useWeatherContext } from "../../state"
+import getTime from "../../../utils/get_time"
+import { useWeatherContext } from "../../../state"
 
-export default function WeatherComponent(props) {
+export default function WeatherComponentHeader(props) {
   const { weatherData } = useWeatherContext()
 
   const {
     name,
     sys: { country },
     weather: [{ description }],
-    main: { temp, temp_max: tempMax, temp_min: tempMin, pressure, humidity },
-    visibility,
-    wind: { speed: windSpeed, deg: windDegree },
-    sys: { sunrise, sunset },
+    main: { temp, temp_max: tempMax, temp_min: tempMin },
     weather: [{ icon }],
     coord: { lon, lat },
     hue,
@@ -45,27 +41,9 @@ export default function WeatherComponent(props) {
     process.env.VITE_APP_OPENWEATHER_IMAGE_ICON_URL ||
     "https://openweathermap.org/img/wn/"
 
-  const sunriseTime = new Date(sunrise * 1000)
-  const sunsetTime = new Date(sunset * 1000)
-
-  const options = {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  }
-  const formattedSunrise = sunriseTime.toLocaleString("en-US", options)
-  const formattedSunset = sunsetTime.toLocaleString("en-US", options)
-
   const handleBackArrow = (event) => {
     event.stopPropagation()
     navigate("/")
-  }
-
-  const handleSelect = () => {
-    if (isSelected) {
-      return
-    }
-    navigate(`/selectedWeather/${props.city}`)
   }
 
   const handleRemove = (event) => {
@@ -74,23 +52,7 @@ export default function WeatherComponent(props) {
   }
 
   return (
-    <Box
-      width="100%"
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
-      position="relative"
-      onClick={handleSelect}
-      sx={{
-        transition: "transform 0.2s ease-out, box-shadow 0.2s ease-in-out",
-        "&:hover": isSelected
-          ? ""
-          : { cursor: "pointer", transform: "scale(1.02)" },
-      }}
-    >
-      {/* Top Box */}
-
+    <>
       {!isSelected ? (
         <Box
           width="100%"
@@ -419,160 +381,6 @@ export default function WeatherComponent(props) {
           </Box>
         </Box>
       )}
-
-      {/* Bottom Box */}
-      <Box
-        backgroundColor="#383b47"
-        width="100%"
-        display="flex"
-        justifyContent="space-evenly"
-        padding={
-          isSelected
-            ? isFiveHundredPixelWide
-              ? "2rem 1rem"
-              : "4rem 2rem 4rem 2rem"
-            : isFiveHundredPixelWide
-            ? "1rem"
-            : "2rem"
-        }
-        borderRadius="0 0 0.75rem 0.75rem"
-      >
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          gap="0.25rem"
-          marginRight="1rem"
-        >
-          <Box
-            display="flex"
-            alignItems="baseline"
-            gap="0.5em"
-            flexDirection={isFiveHundredPixelWide ? "column" : "row"}
-          >
-            <Typography
-              fontWeight="bold"
-              fontFamily="Open Sans"
-              sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            >
-              Pressure:
-            </Typography>
-            <Typography
-              fontFamily="Open Sans"
-              sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            >
-              {pressure}hPa
-            </Typography>
-          </Box>
-          <Box
-            display="flex"
-            alignItems="baseline"
-            gap="0.5rem"
-            flexDirection={isFiveHundredPixelWide ? "column" : "row"}
-          >
-            <Typography
-              fontWeight="bold"
-              fontFamily="Open Sans"
-              sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            >
-              Humidity:
-            </Typography>
-            <Typography
-              fontFamily="Open Sans"
-              sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            >
-              {humidity}%
-            </Typography>
-          </Box>
-          <Box
-            display="flex"
-            alignItems="baseline"
-            gap="0.5rem"
-            flexDirection={isFiveHundredPixelWide ? "column" : "row"}
-          >
-            <Typography
-              fontWeight="bold"
-              fontFamily="Open Sans"
-              sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            >
-              Visibility:
-            </Typography>
-            <Typography
-              fontFamily="Open Sans"
-              sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            >
-              {visibility / 1000}km
-            </Typography>
-          </Box>
-        </Box>
-        <Divider color="gray" orientation="vertical" flexItem />
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          gap="0.5rem"
-          margin="0 1rem"
-        >
-          <NearMeOutlinedIcon fontSize={isSmallScreen ? "small" : "large"} />
-          <Typography
-            sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            fontFamily="Open Sans"
-            fontWeight="500"
-          >
-            {windSpeed}m/s {windDegree} Degree
-          </Typography>
-        </Box>
-        <Divider color="gray" orientation="vertical" flexItem />
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          gap="0.25rem"
-          marginLeft="1rem"
-        >
-          <Box
-            display="flex"
-            alignItems="baseline"
-            gap="0.5em"
-            flexDirection={isFiveHundredPixelWide ? "column" : "row"}
-          >
-            <Typography
-              fontWeight="bold"
-              fontFamily="Open Sans"
-              sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            >
-              Sunrise:
-            </Typography>
-            <Typography
-              fontFamily="Open Sans"
-              sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            >
-              {formattedSunrise}
-            </Typography>
-          </Box>
-          <Box
-            display="flex"
-            alignItems="baseline"
-            gap="0.5rem"
-            flexDirection={isFiveHundredPixelWide ? "column" : "row"}
-          >
-            <Typography
-              fontWeight="bold"
-              fontFamily="Open Sans"
-              sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            >
-              Sunset:
-            </Typography>
-            <Typography
-              fontFamily="Open Sans"
-              sx={{ fontSize: "clamp(0.8rem, calc(1vw + 0.25rem), 1rem)" }}
-            >
-              {formattedSunset}
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-    </Box>
+    </>
   )
 }

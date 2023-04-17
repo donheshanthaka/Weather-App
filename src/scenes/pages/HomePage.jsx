@@ -8,7 +8,7 @@ import randomHueValue from "../../utils/random_hue"
 import Header from "../components/Header"
 import SearchBar from "../components/SearchBar"
 import Footer from "../components/Footer"
-import WeatherComponent from "../components/WeatherComponent"
+import WeatherComponentLayout from "../components/weather_component/WeatherComponentLayout"
 
 export default function HomePage() {
   const { weatherData, setWeatherData } = useWeatherContext()
@@ -145,7 +145,7 @@ export default function HomePage() {
                     marginTop="2rem"
                     mx="auto"
                   >
-                    <WeatherComponent
+                    <WeatherComponentLayout
                       index={index}
                       city={cityCode}
                       onRemove={handleClose}
