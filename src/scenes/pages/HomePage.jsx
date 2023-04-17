@@ -26,56 +26,49 @@ export default function HomePage() {
 
   const setCachedData = (cityCode, weatherData) => {
     const cachedWeatherData = localStorage.getItem("weatherData")
-    if (cachedWeatherData) {
-      const data = { ...JSON.parse(cachedWeatherData) }
-      data[cityCode] = weatherData
-      data[cityCode]["timestamp"] = Date.now()
-      localStorage.setItem("weatherData", JSON.stringify(data))
-    } else {
-      const data = {}
-      data[cityCode] = weatherData
-      data[cityCode]["timestamp"] = Date.now()
-      localStorage.setItem("weatherData", JSON.stringify(data))
-    }
+    const data = cachedWeatherData ? { ...JSON.parse(cachedWeatherData) } : {}
+    data[cityCode] = weatherData
+    data[cityCode]["timestamp"] = Date.now()
+    localStorage.setItem("weatherData", JSON.stringify(data))
   }
 
   const getWeatherData = async (cityCode, timeStampData) => {
     const cachedData = localStorage.getItem("weatherData")
-    if (cachedData) {
-      const data = JSON.parse(cachedData)
-      const cityData = data[cityCode]
-      if (cityData) {
-        // Check if the cached data is less than 5 minutes old
-        if (Date.now() - cityData.timestamp < timeStampData) {
-          return cityData
-        }
-        try {
-          const weatherData = await getWeatherDataAPI(cityCode)
-          weatherData.hue = cityData.hue
-          setCachedData(cityCode, weatherData)
-          return weatherData
-        } catch (error) {
-          if (enableLogging) {
-            console.error(`Failed to fetch weather data: ${error.message}`)
-          }
-          setError(error.message)
-          setOpenErrorSnackbar(true)
-          return
-        }
-      }
-    }
-    try {
-      const weatherData = await getWeatherDataAPI(cityCode)
-      weatherData.hue = randomHueValue()
-      setCachedData(cityCode, weatherData)
-      return weatherData
-    } catch (error) {
+
+    const handleFetchError = (error) => {
       if (enableLogging) {
         console.error(`Failed to fetch weather data: ${error.message}`)
       }
       setError(error.message)
       setOpenErrorSnackbar(true)
       return
+    }
+
+    if (cachedData) {
+      const data = JSON.parse(cachedData)
+      const cityData = data[cityCode]
+
+      if (cityData && Date.now() - cityData.timestamp < timeStampData) {
+        return cityData
+      }
+
+      try {
+        const weatherData = await getWeatherDataAPI(cityCode)
+        weatherData.hue = cityData?.hue || randomHueValue()
+        setCachedData(cityCode, weatherData)
+        return weatherData
+      } catch (error) {
+        handleFetchError(error)
+      }
+    }
+
+    try {
+      const weatherData = await getWeatherDataAPI(cityCode)
+      weatherData.hue = randomHueValue()
+      setCachedData(cityCode, weatherData)
+      return weatherData
+    } catch (error) {
+      handleFetchError(error)
     }
   }
 
