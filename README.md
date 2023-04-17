@@ -13,10 +13,13 @@ git clone https://github.com/donheshanthaka/Weather-App.git
 
 * Navigate to the project folder
 
-* Create a `.env` file in the project directory with the provided open weather map API key
+* Create a `.env` file in the project directory with the provided open weather map API key and LogRocket app ID, add the open weather map URL mentioned below as well.
 
 ```cmd
 VITE_APP_OPENWEATHER_API_KEY="REPLACE_WITH_API_KEY"
+VITE_APP_lOGROCKET_APP_ID="REPLACE_WITH_APP_ID"
+VITE_APP_OPENWEATHER_URL=https://api.openweathermap.org/data/2.5/weather
+VITE_APP_OPENWEATHER_IMAGE_ICON_URL=https://openweathermap.org/img/wn/
 ```
 
 ```cmd
