@@ -7,8 +7,8 @@ import LogRocket from "logrocket"
 
 function App() {
   LogRocket.init(
-    import.meta.env.VITE_APP_lOGROCKET_APP_ID ||
-      process.env.VITE_APP_lOGROCKET_APP_ID,
+    import.meta.env.VITE_APP_LOGROCKET_APP_ID ||
+      process.env.VITE_APP_LOGROCKET_APP_ID,
     {
       console: true,
     }
