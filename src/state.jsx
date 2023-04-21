@@ -4,9 +4,10 @@ const WeatherContext = createContext()
 
 const WeatherProvider = ({ children }) => {
   const [weatherData, setWeatherData] = useState({})
+  const [intervalIds, setIntervalIds] = useState([])
 
   return (
-    <WeatherContext.Provider value={{ weatherData, setWeatherData }}>
+    <WeatherContext.Provider value={{ weatherData, setWeatherData, intervalIds, setIntervalIds }}>
       {children}
     </WeatherContext.Provider>
   )

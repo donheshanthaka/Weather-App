@@ -14,7 +14,7 @@ import randomHueValue from "../../utils/random_hue"
 export default function AddCity() {
   const isMobileScreen = useMediaQuery("(max-width:500px)")
   const [city, setCity] = useState("")
-  const { weatherData, setWeatherData } = useWeatherContext()
+  const { weatherData, setWeatherData, setIntervalIds } = useWeatherContext()
   const enableLogging = process.env.NODE_ENV === "development"
   const [error, setError] = useState("")
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
@@ -28,8 +28,8 @@ export default function AddCity() {
 
   const getWeatherData = async (
     cityCode,
-    timeStampData = 300000,
-    intervalId
+    timeDelayData = 300000,
+    manualCall = false,
   ) => {
     const cachedData = localStorage.getItem("weatherData")
 
@@ -47,10 +47,16 @@ export default function AddCity() {
       const cityData = data[cityCode]
 
       if (cityData) {
+        if (Date.now() - cityData.timestamp < timeDelayData && manualCall) {
+          setWeatherData(data)
+          return
+        }
+
         try {
           const fetchedData = await getWeatherDataAPI(cityCode)
           fetchedData.hue = cityData?.hue || randomHueValue()
-          fetchedData.timestamp = timeStampData
+          fetchedData.timestamp = Date.now()
+          fetchedData.timeDelay = timeDelayData
           fetchedData.createdAt = cityData.createdAt
           fetchedData.timerIntervalID = cityData.timerIntervalID
           setCachedData(cityCode, fetchedData)
@@ -60,31 +66,11 @@ export default function AddCity() {
               ...fetchedData,
             },
           }))
-          console.log("second" + cityCode)
           return true
         } catch (error) {
           handleFetchError(error)
         }
       }
-    }
-
-    try {
-      const fetchedData = await getWeatherDataAPI(cityCode)
-      fetchedData.hue = randomHueValue()
-      fetchedData.timestamp = timeStampData
-      fetchedData.createdAt = Date.now()
-      fetchedData.timerIntervalID = intervalId
-      setCachedData(cityCode, fetchedData)
-      setWeatherData((prevData) => ({
-        ...prevData,
-        [cityCode]: {
-          ...fetchedData,
-        },
-      }))
-      console.log("first" + cityCode)
-      return true
-    } catch (error) {
-      handleFetchError(error)
     }
   }
 
@@ -101,13 +87,13 @@ export default function AddCity() {
       if (newCity.id in weatherData) {
         throw new Error("City already in this list")
       }
-      const timestamp = 20000
+      const timeDelay = 20000
       const intervalId = setInterval(() => {
-        console.log(`Time's up ${newCity.id}`)
-        getWeatherData(newCity.id, timestamp)
-      }, timestamp)
+        getWeatherData(newCity.id, timeDelay)
+      }, timeDelay)
       newCity.hue = randomHueValue()
-      newCity.timestamp = timestamp
+      newCity.timestamp = Date.now()
+      newCity.timeDelay = timeDelay
       newCity.createdAt = Date.now()
       newCity.timerIntervalID = intervalId
       setWeatherData((prevData) => ({
@@ -118,6 +104,7 @@ export default function AddCity() {
       }))
       setCity("")
       setCachedData(newCity.id, newCity)
+      setIntervalIds((prevIds) => [...prevIds, intervalId])
     } catch (error) {
       if (enableLogging) {
         console.error(`Failed to fetch weather data: ${error.message}`)
