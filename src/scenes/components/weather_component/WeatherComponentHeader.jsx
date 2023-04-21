@@ -24,6 +24,7 @@ export default function WeatherComponentHeader(props) {
     weather: [{ icon }],
     coord: { lon, lat },
     hue,
+    timerIntervalID,
   } = weatherData[props.city]
 
   const tempInt = parseInt(temp)
@@ -51,6 +52,7 @@ export default function WeatherComponentHeader(props) {
     const newData = { ...weatherData }
     delete newData[props.city]
     localStorage.setItem("weatherData", JSON.stringify(newData))
+    clearInterval(timerIntervalID)
     setWeatherData(newData)
   }
 

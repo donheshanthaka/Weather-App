@@ -26,6 +26,68 @@ export default function AddCity() {
     localStorage.setItem("weatherData", JSON.stringify(data))
   }
 
+  const getWeatherData = async (
+    cityCode,
+    timeStampData = 300000,
+    intervalId
+  ) => {
+    const cachedData = localStorage.getItem("weatherData")
+
+    const handleFetchError = (error) => {
+      if (enableLogging) {
+        console.error(`Failed to fetch weather data: ${error.message}`)
+      }
+      setError(error.message)
+      setOpenErrorSnackbar(true)
+      return
+    }
+
+    if (cachedData) {
+      const data = JSON.parse(cachedData)
+      const cityData = data[cityCode]
+
+      if (cityData) {
+        try {
+          const fetchedData = await getWeatherDataAPI(cityCode)
+          fetchedData.hue = cityData?.hue || randomHueValue()
+          fetchedData.timestamp = timeStampData
+          fetchedData.createdAt = cityData.createdAt
+          fetchedData.timerIntervalID = cityData.timerIntervalID
+          setCachedData(cityCode, fetchedData)
+          setWeatherData((prevData) => ({
+            ...prevData,
+            [cityCode]: {
+              ...fetchedData,
+            },
+          }))
+          console.log("second" + cityCode)
+          return true
+        } catch (error) {
+          handleFetchError(error)
+        }
+      }
+    }
+
+    try {
+      const fetchedData = await getWeatherDataAPI(cityCode)
+      fetchedData.hue = randomHueValue()
+      fetchedData.timestamp = timeStampData
+      fetchedData.createdAt = Date.now()
+      fetchedData.timerIntervalID = intervalId
+      setCachedData(cityCode, fetchedData)
+      setWeatherData((prevData) => ({
+        ...prevData,
+        [cityCode]: {
+          ...fetchedData,
+        },
+      }))
+      console.log("first" + cityCode)
+      return true
+    } catch (error) {
+      handleFetchError(error)
+    }
+  }
+
   const handleCityChange = (event) => {
     setCity(event.target.value)
   }
@@ -39,9 +101,15 @@ export default function AddCity() {
       if (newCity.id in weatherData) {
         throw new Error("City already in this list")
       }
+      const timestamp = 20000
+      const intervalId = setInterval(() => {
+        console.log(`Time's up ${newCity.id}`)
+        getWeatherData(newCity.id, timestamp)
+      }, timestamp)
       newCity.hue = randomHueValue()
-      newCity.timestamp = Date.now()
+      newCity.timestamp = timestamp
       newCity.createdAt = Date.now()
+      newCity.timerIntervalID = intervalId
       setWeatherData((prevData) => ({
         ...prevData,
         [newCity.id]: {

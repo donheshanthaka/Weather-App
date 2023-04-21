@@ -14,6 +14,7 @@ export default function HomePage() {
   const { weatherData, setWeatherData } = useWeatherContext()
   const [error, setError] = useState("")
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const enableLogging = process.env.NODE_ENV === "development"
   const isGridToggle = useMediaQuery("(min-width:1536px)")
   const isThousandPixelWide = useMediaQuery("(max-width:1000px)")
@@ -32,7 +33,11 @@ export default function HomePage() {
     localStorage.setItem("weatherData", JSON.stringify(data))
   }
 
-  const getWeatherData = async (cityCode, timeStampData = 300000) => {
+  const getWeatherData = async (
+    cityCode,
+    timeStampData = 300000,
+    intervalId
+  ) => {
     const cachedData = localStorage.getItem("weatherData")
 
     const handleFetchError = (error) => {
@@ -48,17 +53,22 @@ export default function HomePage() {
       const data = JSON.parse(cachedData)
       const cityData = data[cityCode]
 
-      if (cityData && Date.now() - cityData.timestamp < timeStampData) {
-        return cityData
-      }
       if (cityData) {
         try {
-          const weatherData = await getWeatherDataAPI(cityCode)
-          weatherData.hue = cityData?.hue || randomHueValue()
-          weatherData.timestamp = Date.now()
-          weatherData.createdAt = cityData.createdAt
-          setCachedData(cityCode, weatherData)
-          return weatherData
+          const fetchedData = await getWeatherDataAPI(cityCode)
+          fetchedData.hue = cityData?.hue || randomHueValue()
+          // weatherData.timestamp = Date.now()
+          fetchedData.timestamp = timeStampData
+          fetchedData.createdAt = cityData.createdAt
+          fetchedData.timerIntervalID = cityData.timerIntervalID
+          setCachedData(cityCode, fetchedData)
+          setWeatherData((prevData) => ({
+            ...prevData,
+            [cityCode]: {
+              ...fetchedData,
+            },
+          }))
+          return true
         } catch (error) {
           handleFetchError(error)
         }
@@ -66,35 +76,47 @@ export default function HomePage() {
     }
 
     try {
-      const weatherData = await getWeatherDataAPI(cityCode)
-      weatherData.hue = randomHueValue()
-      weatherData.timestamp = Date.now()
-      weatherData.createdAt = Date.now()
-      setCachedData(cityCode, weatherData)
-      return weatherData
+      const fetchedData = await getWeatherDataAPI(cityCode)
+      fetchedData.hue = randomHueValue()
+      fetchedData.timestamp = timeStampData
+      fetchedData.createdAt = Date.now()
+      fetchedData.timerIntervalID = intervalId
+      setCachedData(cityCode, fetchedData)
+      setWeatherData((prevData) => ({
+        ...prevData,
+        [cityCode]: {
+          ...fetchedData,
+        },
+      }))
+      return true
     } catch (error) {
       handleFetchError(error)
     }
   }
 
   useEffect(() => {
+    const intervalIds = []
+
     const fetchWeatherData = async () => {
       const cachedWeatherData = localStorage.getItem("weatherData")
       const cityData = cachedWeatherData
         ? { ...JSON.parse(cachedWeatherData) }
         : citiesJSONObject
-      const data = {}
       for (const cityCode in cityData) {
         const timestamp = cityData[cityCode]["timestamp"]
-        const weather = await getWeatherData(cityCode, timestamp)
-        //  only add to list if a proper data format is returned
-        if (weather) {
-          data[cityCode] = weather
-        }
+        const intervalId = setInterval(() => {
+          getWeatherData(cityCode, timestamp)
+        }, timestamp)
+        intervalIds.push(intervalId)
+        const weather = await getWeatherData(cityCode, timestamp, intervalId)
       }
-      setWeatherData(data)
     }
+
     fetchWeatherData()
+
+    return () => {
+      intervalIds.forEach(clearInterval)
+    }
   }, [])
 
   return (
