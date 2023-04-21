@@ -6,6 +6,7 @@ import backgroundImage from "../../assets/header_bg.png"
 import cities from "../../data/cities.json"
 import getWeatherDataAPI from "../../api/weather_api"
 import randomHueValue from "../../utils/random_hue"
+import setCacheData from "../../utils/set_cache_data"
 import Header from "../components/Header"
 import AddCity from "../components/AddCity"
 import Footer from "../components/Footer"
@@ -27,14 +28,12 @@ export default function HomePage() {
     return acc
   }, {})
 
-  const setCachedData = (cityCode, weatherData) => {
-    const cachedWeatherData = localStorage.getItem("weatherData")
-    const data = cachedWeatherData ? { ...JSON.parse(cachedWeatherData) } : {}
-    data[cityCode] = weatherData
-    localStorage.setItem("weatherData", JSON.stringify(data))
-  }
-
-  const getWeatherData = async (cityCode, timeDelayData = 300000, intervalId, manualCall = false) => {
+  const getWeatherData = async (
+    cityCode,
+    timeDelayData = 300000,
+    intervalId,
+    manualCall = false
+  ) => {
     const cachedData = localStorage.getItem("weatherData")
     const handleFetchError = (error) => {
       if (enableLogging) {
@@ -43,39 +42,42 @@ export default function HomePage() {
       setError(error.message)
       setOpenErrorSnackbar(true)
     }
-  
+
     try {
       const data = cachedData ? JSON.parse(cachedData) : {}
       const cityData = data?.[cityCode]
-  
-      if (cityData && Date.now() - cityData.timestamp < timeDelayData && manualCall) {
+
+      if (
+        cityData &&
+        Date.now() - cityData.timestamp < timeDelayData &&
+        manualCall
+      ) {
         cityData.timerIntervalID = intervalId
-        setCachedData(cityCode, cityData)
+        setCacheData(cityCode, cityData)
         setWeatherData(data)
         return true
       }
-  
+
       const fetchedData = await getWeatherDataAPI(cityCode)
       fetchedData.hue = cityData?.hue || randomHueValue()
       fetchedData.timestamp = Date.now()
       fetchedData.timeDelay = timeDelayData
       fetchedData.createdAt = cityData?.createdAt || Date.now()
       fetchedData.timerIntervalID = cityData?.timerIntervalID || intervalId
-      setCachedData(cityCode, fetchedData)
-      setWeatherData(prevData => ({
+      setCacheData(cityCode, fetchedData)
+      setWeatherData((prevData) => ({
         ...prevData,
         [cityCode]: {
-          ...fetchedData
-        }
+          ...fetchedData,
+        },
       }))
       return true
     } catch (error) {
       handleFetchError(error)
     }
-  
+
     return false
   }
-  
 
   useEffect(() => {
     const fetchWeatherData = async () => {
@@ -89,12 +91,7 @@ export default function HomePage() {
           getWeatherData(cityCode, timeDelay)
         }, timeDelay)
         setIntervalIds((prevIds) => [...prevIds, intervalId])
-        await getWeatherData(
-          cityCode,
-          timeDelay,
-          intervalId,
-          true
-        )
+        await getWeatherData(cityCode, timeDelay, intervalId, true)
       }
       setIsLoading(false)
     }

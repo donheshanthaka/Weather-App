@@ -10,6 +10,7 @@ import {
 import getWeatherDataAPI from "../../api/weather_api"
 import { useWeatherContext } from "../../state"
 import randomHueValue from "../../utils/random_hue"
+import setCacheData from "../../utils/set_cache_data"
 
 export default function AddCity() {
   const isMobileScreen = useMediaQuery("(max-width:500px)")
@@ -19,17 +20,10 @@ export default function AddCity() {
   const [error, setError] = useState("")
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
 
-  const setCachedData = (cityCode, newCityData) => {
-    const cachedWeatherData = localStorage.getItem("weatherData")
-    const data = { ...JSON.parse(cachedWeatherData) }
-    data[cityCode] = newCityData
-    localStorage.setItem("weatherData", JSON.stringify(data))
-  }
-
   const getWeatherData = async (
     cityCode,
     timeDelayData = 300000,
-    manualCall = false,
+    manualCall = false
   ) => {
     const cachedData = localStorage.getItem("weatherData")
 
@@ -59,7 +53,7 @@ export default function AddCity() {
           fetchedData.timeDelay = timeDelayData
           fetchedData.createdAt = cityData.createdAt
           fetchedData.timerIntervalID = cityData.timerIntervalID
-          setCachedData(cityCode, fetchedData)
+          setCacheData(cityCode, fetchedData)
           setWeatherData((prevData) => ({
             ...prevData,
             [cityCode]: {
@@ -103,7 +97,7 @@ export default function AddCity() {
         },
       }))
       setCity("")
-      setCachedData(newCity.id, newCity)
+      setCacheData(newCity.id, newCity)
       setIntervalIds((prevIds) => [...prevIds, intervalId])
     } catch (error) {
       if (enableLogging) {
