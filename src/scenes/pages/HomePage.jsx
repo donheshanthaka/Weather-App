@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { Box, useMediaQuery, Grid, Snackbar, Alert } from "@mui/material"
+import CircularProgress from "@mui/material/CircularProgress"
 import { useWeatherContext } from "../../state"
 import backgroundImage from "../../assets/header_bg.png"
 import cities from "../../data/cities.json"
@@ -110,6 +111,7 @@ export default function HomePage() {
         intervalIds.push(intervalId)
         const weather = await getWeatherData(cityCode, timestamp, intervalId)
       }
+      setIsLoading(false)
     }
 
     fetchWeatherData()
@@ -151,37 +153,41 @@ export default function HomePage() {
             textAlign="center"
             marginBottom="5.2rem"
           >
-            <Grid container>
-              {Object.entries(weatherData)
-                .sort(([, a], [, b]) => b.createdAt - a.createdAt)
-                .map(([cityCode], index) => (
-                  <Grid
-                    key={index}
-                    item
-                    xs={12}
-                    xl={6}
-                    justifySelf="center"
-                    width="100%"
-                  >
-                    <Box
-                      width={
-                        isGridToggle
-                          ? "85%"
-                          : isThousandPixelWide
-                          ? "85%"
-                          : "65%"
-                      }
-                      display="flex"
-                      justifyContent="center"
-                      alignItems="center"
-                      marginTop="2rem"
-                      mx="auto"
+            {isLoading ? (
+              <CircularProgress sx={{ color: "#6c5dd3" }} />
+            ) : (
+              <Grid container>
+                {Object.entries(weatherData)
+                  .sort(([, a], [, b]) => b.createdAt - a.createdAt)
+                  .map(([cityCode], index) => (
+                    <Grid
+                      key={index}
+                      item
+                      xs={12}
+                      xl={6}
+                      justifySelf="center"
+                      width="100%"
                     >
-                      <WeatherComponentLayout city={cityCode} />
-                    </Box>
-                  </Grid>
-                ))}
-            </Grid>
+                      <Box
+                        width={
+                          isGridToggle
+                            ? "85%"
+                            : isThousandPixelWide
+                            ? "85%"
+                            : "65%"
+                        }
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        marginTop="2rem"
+                        mx="auto"
+                      >
+                        <WeatherComponentLayout city={cityCode} />
+                      </Box>
+                    </Grid>
+                  ))}
+              </Grid>
+            )}
           </Box>
         </Box>
         <Footer />
